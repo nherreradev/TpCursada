@@ -362,3 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /TpCursada/ModelML/model.zip
+
+# Config server, user and psw data base
+/TpCursada/appsettings.json
