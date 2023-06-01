@@ -37,5 +37,12 @@ namespace TpCursada.Controllers
 
         //    return View(percentaje);
         //}
+
+        public IActionResult HistorialDeBusqueda()
+        {
+
+            return View();
+        }
+        
     }
 }
