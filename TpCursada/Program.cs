@@ -50,6 +50,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=ProductRecommender}/{action=Recommend}/{id?}");
+    pattern: "{controller=ProductRecommender}/{action=index}/{id?}");
 
 app.Run();
