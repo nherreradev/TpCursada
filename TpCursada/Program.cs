@@ -1,7 +1,11 @@
+using TpCursada.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+ProductRecommenderIAService trainig=new ProductRecommenderIAService();
+trainig.trainig();
 
 var app = builder.Build();
 

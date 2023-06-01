@@ -1,0 +1,11 @@
+ProductID	ProductID_Copurchased
+1	2
+1	4
+2	6
+3	5
+4	8
+5	9
+6	7
+7	10
+8	9
+9	10

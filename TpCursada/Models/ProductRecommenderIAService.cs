@@ -28,57 +28,64 @@ namespace TpCursada.Models
         private static string DataRelativePath = $"{BaseDataSetRelativePath}/Consumos.txt";
         private static string DataLocationRelative = GetAbsolutePath(DataRelativePath);
 
-
-
-        private static string BaseModelRelativePath = @"../../../Model";
+        private static string BaseModelRelativePath = @"../../../ModelML";
         private static string ModelRelativePath = $"{BaseModelRelativePath}/model.zip";
         private static string ModelPath = GetAbsolutePath(ModelRelativePath);
 
         public void trainig() {
 
-            //STEP 1: Create MLContext to be shared across the model creation workflow objects
-            MLContext mlContext = new MLContext();
+            try
+            {
+                // Código de entrenamiento aquí
 
-            //STEP 2: Read the trained data using TextLoader by defining the schema for reading the product co-purchase dataset
-            //        Do remember to replace amazon0302.txt with dataset from https://snap.stanford.edu/data/amazon0302.html
-            // Especifica la ubicación real de tus datos de entrenamiento 
-            //string TrainingDataLocation = "C:\\web3\\Pruebas\\LibreriaHtmlAgilityPack\\ProductRecommendation\\Data\\Amazon0302.txt";
-            string TrainingDataLocation = TrainingDataLocationRelative;
-            var traindata = mlContext.Data.LoadFromTextFile(path: TrainingDataLocation,
-                                                             columns: new[]
-                                                             {
-                                                                    new TextLoader.Column("Label", DataKind.Single, 0),
-                                                      new TextLoader.Column(name:nameof(ProductEntry.ProductID), dataKind:DataKind.UInt32, source: new [] { new TextLoader.Range(0) }, keyCount: new KeyCount(262111)),
-                                                      new TextLoader.Column(name:nameof(ProductEntry.CoPurchaseProductID), dataKind:DataKind.UInt32, source: new [] { new TextLoader.Range(1) }, keyCount: new KeyCount(262111))
-                                                             },
-           hasHeader: true,
-                                                             separatorChar: '\t');
+                //STEP 1: Create MLContext to be shared across the model creation workflow objects
+                MLContext mlContext = new MLContext();
 
-            //STEP 3: Your data is already encoded so all you need to do is specify options for MatrxiFactorizationTrainer with a few extra hyperparameters
-            //        LossFunction, Alpa, Lambda and a few others like K and C as shown below and call the trainer.
-            MatrixFactorizationTrainer.Options options = new MatrixFactorizationTrainer.Options();
-            options.MatrixColumnIndexColumnName = nameof(ProductEntry.ProductID);
-            options.MatrixRowIndexColumnName = nameof(ProductEntry.CoPurchaseProductID);
-            options.LabelColumnName = "Label";
-            options.LossFunction = MatrixFactorizationTrainer.LossFunctionType.SquareLossOneClass;
-            options.Alpha = 0.01;
-            options.Lambda = 0.025;
-            // For better results use the following parameters
-            //options.K = 100;
-            //options.C = 0.00001;
+                //STEP 2: Read the trained data using TextLoader by defining the schema for reading the product co-purchase dataset
+                //        Do remember to replace amazon0302.txt with dataset from https://snap.stanford.edu/data/amazon0302.html
+                // Especifica la ubicación real de tus datos de entrenamiento 
+                //string TrainingDataLocation = "C:\\web3\\Pruebas\\LibreriaHtmlAgilityPack\\ProductRecommendation\\Data\\Amazon0302.txt";
+                string TrainingDataLocation = DataLocationRelative;
+                var traindata = mlContext.Data.LoadFromTextFile(path: TrainingDataLocation,
+                                           columns: new[]
+                                           {
+                                            new TextLoader.Column("Label", DataKind.Single, 0),
+                                            new TextLoader.Column(name:nameof(ProductEntry.ProductID), dataKind:DataKind.UInt32, source: new [] { new TextLoader.Range(0) }, keyCount: new KeyCount(262111)),
+                                            new TextLoader.Column(name:nameof(ProductEntry.CoPurchaseProductID), dataKind:DataKind.UInt32, source: new [] { new TextLoader.Range(1) }, keyCount: new KeyCount(262111))
+                                           },
+                                           hasHeader: true,
+                                           separatorChar: '\t');
 
-            //Step 4: Call the MatrixFactorization trainer by passing options.
-            var est = mlContext.Recommendation().Trainers.MatrixFactorization(options);
+                //STEP 3: Your data is already encoded so all you need to do is specify options for MatrxiFactorizationTrainer with a few extra hyperparameters
+                //        LossFunction, Alpa, Lambda and a few others like K and C as shown below and call the trainer.
+                MatrixFactorizationTrainer.Options options = new MatrixFactorizationTrainer.Options();
+                options.MatrixColumnIndexColumnName = nameof(ProductEntry.ProductID);
+                options.MatrixRowIndexColumnName = nameof(ProductEntry.CoPurchaseProductID);
+                options.LabelColumnName = "Label";
+                options.LossFunction = MatrixFactorizationTrainer.LossFunctionType.SquareLossOneClass;
+                options.Alpha = 0.01;
+                options.Lambda = 0.025;
+                // For better results use the following parameters
+                //options.K = 100;
+                //options.C = 0.00001;
 
+                //Step 4: Call the MatrixFactorization trainer by passing options.
+                var est = mlContext.Recommendation().Trainers.MatrixFactorization(options);
 
-            //STEP 5: Train the model fitting to the DataSet
-            //Please add Amazon0302.txt dataset from https://snap.stanford.edu/data/amazon0302.html to Data folder if FileNotFoundException is thrown.
-            ITransformer model = est.Fit(traindata);
+                //STEP 5: Train the model fitting to the DataSet
+                //Please add Amazon0302.txt dataset from https://snap.stanford.edu/data/amazon0302.html to Data folder if FileNotFoundException is thrown.
+                ITransformer model = est.Fit(traindata);
 
-            //
-            mlContext.Model.Save(model, traindata.Schema, ModelPath);
-            //En esta parte termina el Trainig
-            //Apartir de aca seria usar el modelo para crear la predicion
+                //STEP EXTRA:Guardar el modelo para aligerar la ejecucion
+                mlContext.Model.Save(model, traindata.Schema, ModelPath);
+                Console.WriteLine("Archivo Model Generado....---");
+                //En esta parte termina el Trainig
+                //Apartir de aca seria usar el modelo para crear la predicion
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error durante el entrenamiento del modelo: " + ex.Message);
+            }
         }
 
         public float recomendarById(int productID) {
@@ -97,14 +104,12 @@ namespace TpCursada.Models
                                                          new ProductEntry()
                                                          {
                                                              ProductID = (uint)productID,
-                                                             CoPurchaseProductID = 60
+                                                             CoPurchaseProductID = 10
                                                          });
             return prediction.Score;
-
         }
         public float recommend(int productID)
         {
-
             // Especifica la ubicación real de tus datos de entrenamiento
             string trainingDataPath = "C:\\Users\\sullc\\Source\\Repos\\TpCursada\\TpCursada\\Data\\Amazon0302.txt";
 

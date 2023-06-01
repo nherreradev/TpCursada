@@ -11,21 +11,21 @@ namespace TpCursada.Controllers
         public IActionResult Recommend(int productID)
         {
 
-            float percentaje = productRecommenderIAService.recomendarById(3);
+            float percentaje = productRecommenderIAService.recomendarById(productID);
 
             ViewBag.percentajeView = percentaje;
 
             return View(percentaje);
         }
 
-        public IActionResult Recommend(int productID)
-        {
+        //public IActionResult Recommend(int productID)
+        //{
 
-            float percentaje = productRecommenderIAService.recommend(productID);
+        //    float percentaje = productRecommenderIAService.recommend(productID);
 
-            ViewBag.percentajeView = percentaje;
+        //    ViewBag.percentajeView = percentaje;
 
-            return View(percentaje);
-        }
+        //    return View(percentaje);
+        //}
     }
 }
