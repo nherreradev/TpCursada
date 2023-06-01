@@ -1,6 +1,8 @@
 ﻿using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Trainers;
+using System.Reflection;
+
 namespace TpCursada.Models
 {
     public class ProductRecommenderIAService
@@ -36,7 +38,6 @@ namespace TpCursada.Models
 
             //STEP 1: Create MLContext to be shared across the model creation workflow objects
             MLContext mlContext = new MLContext();
-
 
             //STEP 2: Read the trained data using TextLoader by defining the schema for reading the product co-purchase dataset
             //        Do remember to replace amazon0302.txt with dataset from https://snap.stanford.edu/data/amazon0302.html
@@ -80,6 +81,27 @@ namespace TpCursada.Models
             //Apartir de aca seria usar el modelo para crear la predicion
         }
 
+        public float recomendarById(int productID) {
+            //Apartir de aca seria usar el modelo para crear la predicion
+            //
+            //Seguinda parte o metodo que debe ejecutarse al pedir las solicitudes
+            /*model el nombre asignado para que use el createPredictions*/
+            MLContext mlContext = new MLContext();
+            var model = mlContext.Model.Load(ModelPath,out var schema);
+
+            //STEP 6: Create prediction engine and predict the score for Product 63 being co-purchased with Product 3.
+            //        The higher the score the higher the probability for this particular productID being co-purchased
+
+            var predictionengine = mlContext.Model.CreatePredictionEngine<ProductEntry, Copurchase_prediction>(model);
+            var prediction = predictionengine.Predict(
+                                                         new ProductEntry()
+                                                         {
+                                                             ProductID = (uint)productID,
+                                                             CoPurchaseProductID = 60
+                                                         });
+            return prediction.Score;
+
+        }
         public float recommend(int productID)
         {
 
