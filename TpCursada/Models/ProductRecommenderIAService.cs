@@ -2,11 +2,18 @@
 using Microsoft.ML.Data;
 using Microsoft.ML.Trainers;
 using System.Reflection;
+using TpCursada.Dominio;
 
 namespace TpCursada.Models
 {
     public class ProductRecommenderIAService
     {
+        private PW3TiendaContext _contextBD;
+
+        public ProductRecommenderIAService()
+        {
+            _contextBD = new PW3TiendaContext();
+        }
 
         public static string GetAbsolutePath(string relativeDatasetPath)
         {
@@ -32,10 +39,30 @@ namespace TpCursada.Models
         private static string ModelRelativePath = $"{BaseModelRelativePath}/model.zip";
         private static string ModelPath = GetAbsolutePath(ModelRelativePath);
 
+        public void generarArchivoTrainigDB() {
+
+            // Obtiene la lista de productos-coproductos del historia-productos
+            /**********************************************/
+
+            var historialProdCoprod = _contextBD.ProductSalesHistories.ToList();
+
+            // Construye la cadena de texto con las etiquetas
+
+            var text = "ProductID\tProductID_Copurchased" + Environment.NewLine;
+            text += string.Join(Environment.NewLine, historialProdCoprod.Select(r => $"{r.IdProducto}\t{r.IdCoproducto}"));
+
+            // Guarda la cadena de texto en un archivo
+            string filePath = DataLocationRelative;
+            File.WriteAllText(filePath, text);
+
+            /**********************Fin SQL************************/
+        }
         public void trainigModelML() {
 
             try
             {
+                // Código de generador en base al Historial en la db
+                generarArchivoTrainigDB();
                 // Código de entrenamiento aquí
 
                 //STEP 1: Create MLContext to be shared across the model creation workflow objects
