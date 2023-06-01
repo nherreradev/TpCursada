@@ -21,7 +21,7 @@ namespace TpCursada.Controllers
         public IActionResult Recommend(int productID)
         {
 
-            float percentaje = productRecommenderIAService.recomendarById(3);
+            float percentaje = productRecommenderIAService.recommend(productID);
 
             ViewBag.percentajeView = percentaje;
 
