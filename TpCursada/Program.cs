@@ -1,4 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System.Configuration;
+using TpCursada.Dominio;
 using TpCursada.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,12 +9,30 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-///
-ProductRecommenderIAService IAProductRecomendation=new ProductRecommenderIAService();
-IAProductRecomendation.trainigModelML();
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+// Cargar la configuración desde el archivo appsettings.json
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("appsettings.json")
+    .Build();
+builder.Services.AddDbContext<PW3TiendaContext>(options =>
+    options.UseSqlServer(configuration.GetConnectionString("EFCoreContext")));
+
+// Agregar el servicio ProductRecommenderIAService al contenedor
+builder.Services.AddTransient<ProductRecommenderIAService>();
+
 ///
 var app = builder.Build();
+// Obtener una instancia del servicio ProductRecommenderIAService a través del proveedor de servicios
+using (var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    var productRecommenderService = serviceProvider.GetRequiredService<ProductRecommenderIAService>();
 
+    // Utilizar el servicio según sea necesario
+    productRecommenderService.trainigModelML();
+}
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

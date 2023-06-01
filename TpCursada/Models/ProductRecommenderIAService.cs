@@ -8,11 +8,12 @@ namespace TpCursada.Models
 {
     public class ProductRecommenderIAService
     {
-        private PW3TiendaContext _contextBD;
 
-        public ProductRecommenderIAService()
+        private  PW3TiendaContext _contextBD;
+
+        public ProductRecommenderIAService(PW3TiendaContext context)
         {
-            _contextBD = new PW3TiendaContext();
+            _contextBD = context;
         }
 
         public static string GetAbsolutePath(string relativeDatasetPath)

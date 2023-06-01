@@ -5,13 +5,23 @@ namespace TpCursada.Controllers
 {
     public class ProductRecommenderController : Controller
     {
-        ProductRecommenderIAService productRecommenderIAService = new ProductRecommenderIAService();
 
+        private  ProductRecommenderIAService _productRecommenderIAService;
+
+        public ProductRecommenderController(ProductRecommenderIAService productRecommenderIAService)
+        {
+            _productRecommenderIAService = productRecommenderIAService;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
 
         public IActionResult Recommend(int productID)
         {
 
-            float percentaje = productRecommenderIAService.recomendarById(productID);
+            float percentaje = _productRecommenderIAService.recomendarById(productID);
 
             ViewBag.percentajeView = percentaje;
 
