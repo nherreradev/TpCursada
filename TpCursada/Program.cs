@@ -4,8 +4,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-ProductRecommenderIAService trainig=new ProductRecommenderIAService();
-trainig.trainig();
+ProductRecommenderIAService IAProductRecomendation=new ProductRecommenderIAService();
+IAProductRecomendation.trainigModelML();
 
 var app = builder.Build();
 
