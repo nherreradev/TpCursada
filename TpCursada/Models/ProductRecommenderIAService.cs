@@ -27,7 +27,7 @@ namespace TpCursada.Models
         }
 
         // Genero el path absoluto desde el relativo del proyecto leer el archivo trainig VIA AMAZON
-        private static string BaseDataSetRelativePath = @"../../../DATA";
+        private static readonly string BaseDataSetRelativePath = @"../../../DATA";
         private static string TrainingDataRelativePath = $"{BaseDataSetRelativePath}/Amazon0302.txt";
         private static string TrainingDataLocationRelative = GetAbsolutePath(TrainingDataRelativePath);
 
