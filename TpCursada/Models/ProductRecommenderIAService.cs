@@ -144,7 +144,7 @@ namespace TpCursada.Models
 
         }
 
-        public float recommend(int productID)
+        public IEnumerable<(int,float)> recommendTop5(int productID)
         {
             //Apartir de aca seria usar el modelo para crear la predicion
             //
@@ -156,8 +156,20 @@ namespace TpCursada.Models
                                                              ProductID = (uint)productID,
                                                              CoPurchaseProductID = 10
                                                          });
-            return prediction.Score;
 
+            // find the top 5 combined products for product 6
+            Console.WriteLine("Calculating the top 5 products for product 3...");
+            var top5 = (from m in Enumerable.Range(1, 100)
+                        let p = predictionengine.Predict(
+                           new ProductEntry()
+                           {
+                               ProductID = 3,
+                               CoPurchaseProductID = (uint)m
+                           })
+                        orderby p.Score descending
+                        select (ProductID: m, p.Score)).Take(5);
+
+            return top5;
         }
     }
 }

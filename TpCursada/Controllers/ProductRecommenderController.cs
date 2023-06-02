@@ -18,14 +18,21 @@ namespace TpCursada.Controllers
             return View();
         }
 
+
+        public IActionResult Recommend()
+        { 
+            return View();
+        }
+
+        [HttpPost]
         public IActionResult Recommend(int productID)
         {
 
-            float percentaje = _productRecommenderIAService.recomendarById(productID);
+            var resultado = _productRecommenderIAService.recommendTop5(productID);
 
-            ViewBag.percentajeView = percentaje;
+            ViewBag.Prediccion = resultado;
 
-            return View(percentaje);
+            return View();
         }
 
         //public IActionResult Recommend(int productID)
