@@ -1,0 +1,23 @@
+﻿@model IEnumerable<TpCursada.Dominio.Product>
+
+<div class="d-flex justify-content-center">
+	<h1>Bienvenido</h1>
+</div>
+<div class="d-flex justify-content-center mb-4">
+	<h2>Seleccione producto para el cual quiera recibir recomendaciones :D</h2>
+</div>
+
+<div class="row">
+    @foreach (var item in Model){
+        <div class="card pt-2 mb-4 me-4" style="width: 18rem;">
+
+            <div class="card-body ">
+                <h5 class="card-title">@item.Nombre</h5>
+                <img class="card-img-top" src="@item.Imagen" alt="Producto" width="100px;" height="150px;">
+                <p class="card-text">$ @item.Precio</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+
+        </div>
+    }
+</div>
