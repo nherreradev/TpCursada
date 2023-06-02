@@ -156,8 +156,21 @@ namespace TpCursada.Models
                                                              ProductID = (uint)productID,
                                                              CoPurchaseProductID = 10
                                                          });
-            return prediction.Score;
 
+            return prediction.Score;
+             
+        }
+        public void AddHistorico(Historical _historical)
+        {
+            _contextBD.Historicals.Add(_historical);
+            _contextBD.SaveChanges();
+
+        }
+        public List<Historical> GetHistorico()
+        {
+
+            // Obtiene la lista de productos desde el contexto y la devuelve
+            return _contextBD.Historicals.ToList();
         }
     }
 }

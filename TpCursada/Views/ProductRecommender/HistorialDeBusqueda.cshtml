@@ -1,6 +1,5 @@
-﻿
-@{
-}
+﻿@model List<TpCursada.Dominio.Historical>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,17 +20,19 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-center"> @item.Id</td>
+                        <td class="text-center"> @item.IdProducto</td>
+                        <td class="text-center"> @item.IdCoproducto</td>
+                        <td class="text-center"> @item.Puntaje</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
-<div class="container">
-    <div class="text-center">
-        <a class="btn btn-primary" asp-area="" asp-controller="Principal" asp-action="BienvenidosArtificiales">VOLVER A HOME</a>
-    </div>
-</div>
-
-
 </html>
