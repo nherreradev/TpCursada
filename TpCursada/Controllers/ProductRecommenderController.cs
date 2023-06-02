@@ -21,10 +21,12 @@ namespace TpCursada.Controllers
 
         public IActionResult Recommend(int productID)
         {
-
+            int coProductId=5;
             float percentaje = _productRecommenderIAService.recomendarById(productID);
-            ViewBag.percentajeView = percentaje;
-            ViewBag.idCoProduct = 5;
+            ViewBag.percentajeView = (int)percentaje;
+            ViewBag.IdProduct = productID;
+            ViewBag.CoProductId = coProductId;
+            
             return View(new Historical());
         }
         [HttpPost]

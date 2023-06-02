@@ -140,6 +140,7 @@ namespace TpCursada.Models
                                                              ProductID = (uint)productID,
                                                              CoPurchaseProductID = 10
                                                          });
+            
             return prediction.Score;
 
         }
@@ -157,11 +158,14 @@ namespace TpCursada.Models
                                                              CoPurchaseProductID = 10
                                                          });
 
-            return prediction.Score;
-             
+            return prediction.Score; 
         }
         public void AddHistorico(Historical _historical)
         {
+            Product product = new Product();
+            Product coProduct = new Product();
+            product = GetProduct(_historical.IdProducto);
+            coProduct = GetProduct(_historical.IdCoproducto);
             _contextBD.Historicals.Add(_historical);
             _contextBD.SaveChanges();
 
@@ -171,6 +175,10 @@ namespace TpCursada.Models
 
             // Obtiene la lista de productos desde el contexto y la devuelve
             return _contextBD.Historicals.ToList();
+        }
+        public Product GetProduct(int _idProduct)
+        {
+            return _contextBD.Products.FirstOrDefault(p=>p.Id == _idProduct);
         }
     }
 }
