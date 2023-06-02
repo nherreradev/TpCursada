@@ -31,7 +31,8 @@ using (var scope = app.Services.CreateScope())
     var productRecommenderService = serviceProvider.GetRequiredService<ProductRecommenderIAService>();
 
     // Utilizar el servicio según sea necesario
-    productRecommenderService.trainigModelML();
+    //TODO: queda comentado para que no moleste en el front
+    //productRecommenderService.trainigModelML();
 }
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
