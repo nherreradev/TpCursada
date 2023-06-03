@@ -12,10 +12,11 @@
         <div class="card pt-2 mb-4 me-4" style="width: 18rem;">
 
             <div class="card-body ">
+                <p class="card-title">Producto: @item.Id</p>
                 <h5 class="card-title">@item.Nombre</h5>
                 <img class="card-img-top" src="@item.Imagen" alt="Producto" width="100px;" height="150px;">
                 <p class="card-text">$ @item.Precio</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <a href="/ProductRecommender/Recommend/@item.Id" class="btn btn-primary">Recomendarme productos</a>
             </div>
 
         </div>

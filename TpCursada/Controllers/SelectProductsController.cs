@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TpCursada.Dominio;
+using TpCursada.Models;
 
 namespace TpCursada.Controllers;
 
@@ -13,9 +14,12 @@ public class SelectProductsController : Controller
 {
     private readonly PW3TiendaContext _context;
 
-    public SelectProductsController(PW3TiendaContext context)
+    private ProductRecommenderIAService _productRecommenderIAService;
+
+    public SelectProductsController(PW3TiendaContext context,ProductRecommenderIAService productRecommenderIAService)
     {
         _context = context;
+        _productRecommenderIAService = productRecommenderIAService;
     }
 
     public async Task<IActionResult> ShowItemsToRecommend()
@@ -34,7 +38,7 @@ public class SelectProductsController : Controller
     }
 
     // GET: SelectProducts/Details/5
-    public async Task<IActionResult> Details(int? id)
+    /*public async Task<IActionResult> Details(int? id)
     {
         if (id == null || _context.Products == null)
         {
@@ -164,5 +168,5 @@ public class SelectProductsController : Controller
     private bool ProductExists(int id)
     {
       return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
-    }
+    }*/
 }
