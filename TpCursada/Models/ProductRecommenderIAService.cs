@@ -91,8 +91,8 @@ namespace TpCursada.Models
                 options.MatrixRowIndexColumnName = nameof(ProductEntry.CoPurchaseProductID);
                 options.LabelColumnName = "Label";
                 options.LossFunction = MatrixFactorizationTrainer.LossFunctionType.SquareLossOneClass;
-                options.Alpha = 0.01;
-                options.Lambda = 0.025;
+                //options.Alpha = 0.01;
+                //options.Lambda = 0.025;
                 // For better results use the following parameters
                 //options.K = 100;
                 //options.C = 0.00001;
@@ -116,7 +116,7 @@ namespace TpCursada.Models
             }
         }
 
-        public  PredictionEngine<ProductEntry, Copurchase_prediction> consumirModelML()
+        public  PredictionEngine<ProductEntry, CopurchasePrediction> consumirModelML()
         {
             MLContext mlContext = new MLContext();
             var model = mlContext.Model.Load(ModelPath, out var schema);
@@ -124,52 +124,69 @@ namespace TpCursada.Models
             //STEP 6: Create prediction engine and predict the score for Product 63 being co-purchased with Product 3.
             //        The higher the score the higher the probability for this particular productID being co-purchased
 
-            var predictionengine = mlContext.Model.CreatePredictionEngine<ProductEntry, Copurchase_prediction>(model);
+            var predictionengine = mlContext.Model.CreatePredictionEngine<ProductEntry, CopurchasePrediction>(model);
             return predictionengine;
         }
 
-        public float recomendarById(int productID)
+        public float recomendarByIdProCopurId(int productID, int CoPurchaseProductID)
         {
             //Apartir de aca seria usar el modelo para crear la predicion
             //
             //Seguinda parte o metodo que debe ejecutarse al pedir las solicitudes
-            PredictionEngine<ProductEntry, Copurchase_prediction> predictionengine = consumirModelML();
+            PredictionEngine<ProductEntry, CopurchasePrediction> predictionengine = consumirModelML();
             var prediction = predictionengine.Predict(
                                                          new ProductEntry()
                                                          {
                                                              ProductID = (uint)productID,
-                                                             CoPurchaseProductID = 10
-                                                         });
+                                                             CoPurchaseProductID = (uint)CoPurchaseProductID
+                                                         }); ;
             return prediction.Score;
 
         }
 
-        public IEnumerable<(int,float)> recommendTop5(int productID)
+        public ProductListViewModel RecommendTop5(int productID)
         {
             //Apartir de aca seria usar el modelo para crear la predicion
             //
             //Seguinda parte o metodo que debe ejecutarse al pedir las solicitudes
-            PredictionEngine<ProductEntry, Copurchase_prediction> predictionengine = consumirModelML();
-            var prediction = predictionengine.Predict(
-                                                         new ProductEntry()
-                                                         {
-                                                             ProductID = (uint)productID,
-                                                             CoPurchaseProductID = 10
-                                                         });
-
+            PredictionEngine<ProductEntry, CopurchasePrediction> predictionengine = consumirModelML();
+    
             // find the top 5 combined products for product 6
             Console.WriteLine("Calculating the top 5 products for product 3...");
-            var top5 = (from m in Enumerable.Range(1, 100)
+         
+            var top5 = (from m in Enumerable.Range(1, 50)
                         let p = predictionengine.Predict(
                            new ProductEntry()
                            {
-                               ProductID = 3,
+                               ProductID = (uint)productID,
                                CoPurchaseProductID = (uint)m
                            })
                         orderby p.Score descending
-                        select (ProductID: m, p.Score)).Take(5);
+                        select (CoPurchaseProductID: m, p.Score)).Take(5);
+            ProductListViewModel listaResultado = new ProductListViewModel();
+            Product productIngr = new Product();
+            productIngr.Id = productID;
+            productIngr.Nombre ="TV";
+            ////Cargar con la DB
+            listaResultado.product= productIngr;
+            listaResultado._productsRecommendersList = new List<ProductsRecommendersViewModel>();
+            //
+            foreach (var t in top5) {
 
-            return top5;
+                ProductsRecommendersViewModel prodpredi = new ProductsRecommendersViewModel();
+                ////Cargar desde la DB
+                Product pr = new Product(); 
+                pr.Id = t.CoPurchaseProductID;
+                prodpredi.CoproductRecomend=pr;
+                ////
+                prodpredi.predictionScore = (float)Math.Round(t.Score, 1);
+                listaResultado._productsRecommendersList.Add(prodpredi);
+               
+                //=new ProductsRecommendersViewModel(t.ProductID,t.ProductID,productID);
+                Console.WriteLine($"  Score:{t.CoPurchaseProductID}\tProduct: {t.Score}");
+            }
+               ///Returna la lista Coimpleta con el producto a comparar y sus recomendaciones cargadas con la db
+            return listaResultado;
         }
     }
 }

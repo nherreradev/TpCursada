@@ -18,7 +18,7 @@ namespace TpCursada.Controllers
             return View();
         }
 
-
+        [HttpGet]
         public IActionResult Recommend()
         { 
             return View();
@@ -28,21 +28,12 @@ namespace TpCursada.Controllers
         public IActionResult Recommend(int productID)
         {
 
-            var resultado = _productRecommenderIAService.recommendTop5(productID);
-
+            var resultado = _productRecommenderIAService.RecommendTop5(productID);
+         
             ViewBag.Prediccion = resultado;
 
-            return View();
+            return View(resultado);
         }
 
-        //public IActionResult Recommend(int productID)
-        //{
-
-        //    float percentaje = productRecommenderIAService.recommend(productID);
-
-        //    ViewBag.percentajeView = percentaje;
-
-        //    return View(percentaje);
-        //}
     }
 }
