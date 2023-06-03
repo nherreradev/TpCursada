@@ -179,7 +179,7 @@ namespace TpCursada.Models
                 pr.Id = t.CoPurchaseProductID;
                 prodpredi.CoproductRecomend=pr;
                 ////
-                prodpredi.predictionScore = (float)Math.Round(t.Score, 1);
+                prodpredi.predictionScore = (float)Math.Round(t.Score, 2);
                 listaResultado._productsRecommendersList.Add(prodpredi);
                
                 //=new ProductsRecommendersViewModel(t.ProductID,t.ProductID,productID);

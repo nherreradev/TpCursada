@@ -11,7 +11,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-// Cargar la configuración desde el archivo appsettings.json
+// Cargar la configuraciï¿½n desde el archivo appsettings.json
 var configuration = new ConfigurationBuilder()
     .SetBasePath(builder.Environment.ContentRootPath)
     .AddJsonFile("appsettings.json")
@@ -24,15 +24,15 @@ builder.Services.AddTransient<ProductRecommenderIAService>();
 
 ///
 var app = builder.Build();
-// Obtener una instancia del servicio ProductRecommenderIAService a través del proveedor de servicios
+// Obtener una instancia del servicio ProductRecommenderIAService a travï¿½s del proveedor de servicios
 using (var scope = app.Services.CreateScope())
 {
     var serviceProvider = scope.ServiceProvider;
     var productRecommenderService = serviceProvider.GetRequiredService<ProductRecommenderIAService>();
 
-    // Utilizar el servicio según sea necesario
+    // Utilizar el servicio segï¿½n sea necesario
     //TODO: queda comentado para que no moleste en el front
-    productRecommenderService.trainigModelML();
+   // productRecommenderService.trainigModelML();
 }
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
