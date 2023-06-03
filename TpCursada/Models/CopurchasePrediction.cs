@@ -1,6 +1,6 @@
 ﻿namespace TpCursada.Models
 {
-    public class Copurchase_prediction
+    public class CopurchasePrediction
     {
         public float Score { get; set; }
     }
