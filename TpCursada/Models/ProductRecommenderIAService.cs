@@ -165,8 +165,9 @@ namespace TpCursada.Models
                         select (CoPurchaseProductID: m, p.Score)).Take(5);
             ProductListViewModel listaResultado = new ProductListViewModel();
             Product productIngr = new Product();
-            productIngr.Id = productID;
-            productIngr.Nombre ="TV";
+            productIngr = _contextBD.Products.Find(productID);
+            //productIngr.Id = productID;
+            //productIngr.Nombre ="TV";
             ////Cargar con la DB
             listaResultado.product= productIngr;
             listaResultado._productsRecommendersList = new List<ProductsRecommendersViewModel>();
@@ -175,8 +176,9 @@ namespace TpCursada.Models
 
                 ProductsRecommendersViewModel prodpredi = new ProductsRecommendersViewModel();
                 ////Cargar desde la DB
-                Product pr = new Product(); 
-                pr.Id = t.CoPurchaseProductID;
+                Product pr = new Product();
+                pr=_contextBD.Products.Find(t.CoPurchaseProductID);
+                //pr.Id = t.CoPurchaseProductID;
                 prodpredi.CoproductRecomend=pr;
                 ////
                 prodpredi.predictionScore = (float)Math.Round(t.Score, 2);

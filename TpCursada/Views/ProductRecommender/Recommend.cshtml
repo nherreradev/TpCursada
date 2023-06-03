@@ -8,9 +8,9 @@
 @model ProductListViewModel
 
 <form action="/ProductRecommender/Recommend" method="post">
-        <div>
-            <label for="productID">productID:</label>
-            <input type="number" name="productID" id="productID">
+    <div class="form-group">
+            <label for="productID">ProductID:</label>
+        <input type="number" class="form-control" name="productID" id="productID">
         </div>    
         <div>
             <button type="submit">Recomendame</button>
@@ -23,11 +23,31 @@
 
 @if (ViewBag.Prediccion != null)
 {
+    <section style="background-color: #eee;">
+        <div class="container py-3">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6 col-xl-3">
+                    <div class="card text-black">
+                        <img src="@Model.product.Imagen" class="card-img-top" alt="@Model.product.Nombre" />
+                        <div class="card-body">
+                            <div class="text-center">
+                              @*  <h5 class="card-title">Believing is seeing</h5>*@
+                                <p class="text-muted mb-4">@Model.product.Nombre </p>
+                            </div>
+                            <div>                       
+                            <div class="d-flex justify-content-between total font-weight-bold mt-4">
+                                <span>Total</span><span>$@Model.product.Precio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <div>
-      @*  <h1>Predicion  de productos para el Producto: @Model.product.Id </h1>*@
-        <h1>Predicion  de productos para el Producto: @Model.product.Nombre </h1>
-    @*    <h2>Predicion  de productos para el Producto:@Model.product.Nombre </h2>*@
-        <img src="@Model.product.Imagen" />
+        <h1 class="text-center">Predicion  de productos para el Producto:</h1>
+        <h2 class="text-muted mb-4 text-center">@Model.product.Nombre</h2>
     </div>
 
     <table class="table">
@@ -46,7 +66,7 @@
         ACA DEBERIA Y LOS OBJETOS CARGADOS CON LABase de datos
         @item.product.Id
         </td>*@
-                <td>
+                <td class="table-light text-center">
                     @item.CoproductRecomend.Id
                 </td>
 
@@ -54,7 +74,7 @@
                     @item.CoproductRecomend.Nombre
                 </td>
                 <td>
-                    <img src="@item.CoproductRecomend.Imagen" />
+                    <img src="@item.CoproductRecomend.Imagen" class="w-50" />
                 </td>
 
                 <td>
