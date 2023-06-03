@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TpCursada.Dominio;
 using TpCursada.Models;
 
 namespace TpCursada.Controllers
@@ -36,6 +37,11 @@ namespace TpCursada.Controllers
 
             return View(resultado);
         }
-
+        public IActionResult HistorialDeBusqueda()
+        {
+            List<Historical> _historicalList = new List<Historical>();
+            _historicalList = _productRecommenderIAService.GetHistorical();
+            return View(_historicalList);
+        }
     }
 }

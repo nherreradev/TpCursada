@@ -192,7 +192,7 @@ namespace TpCursada.Models
         public void AddRowHistorical(ProductListViewModel _ProductListViewModel)
         {
             Historical historical = new Historical();
-            historical.IdProductoNavigation = _contextBD.Products.FirstOrDefault(x => x.Id == _ProductListViewModel.product.Id);
+            historical.IdProductoNavigation = _contextBD.Products.FirstOrDefault(x => x.Id == _ProductListViewModel.product.Id) ;
             historical.IdCoproductoNavigation= _contextBD.Products.FirstOrDefault(x => x.Id == GetCoProductWithMaxScore(_ProductListViewModel).CoproductRecomend.Id); 
             historical.IdProducto=_ProductListViewModel.product.Id;
             historical.IdCoproducto = historical.IdCoproductoNavigation.Id;
@@ -207,6 +207,13 @@ namespace TpCursada.Models
             _CoproductWithScore = ProductListViewModel._productsRecommendersList.FirstOrDefault();
 
             return _CoproductWithScore;
+        }
+        public List<Historical> GetHistorical()
+        {
+
+            // Obtiene la lista de productos desde el contexto y la devuelve
+            
+            return _contextBD.Historicals.Include("IdCoproductoNavigation").Include("IdProductoNavigation").ToList();
         }
     }
 }
