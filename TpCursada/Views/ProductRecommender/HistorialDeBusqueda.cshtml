@@ -1,0 +1,36 @@
+﻿@model List<TpCursada.Dominio.Historical>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tabla con Bootstrap</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h3>Resultados: </h3>
+
+        <table class="table">
+            <thead class="thead-dark">
+                <tr class="text-center">
+                    <th scope="col">Producto ingresado</th>
+                    <th scope="col">Producto mejor sugerido</th>
+                    <th scope="col">Match</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-center"> @item.IdProductoNavigation.Nombre</td>
+                        <td class="text-center"> @item.IdCoproductoNavigation.Nombre</td>
+                        <td class="text-center">@((int)(Math.Round((decimal)@item.Score,2)*100))%</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

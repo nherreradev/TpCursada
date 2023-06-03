@@ -24,7 +24,8 @@ namespace TpCursada.Dominio
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Name=EFCoreContext");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=CHONII;Database=PW3Tienda;User Id=sa;Password=1234;Trusted_Connection=True;");
             }
         }
 
@@ -40,7 +41,17 @@ namespace TpCursada.Dominio
 
                 entity.Property(e => e.IdProducto).HasColumnName("idProducto");
 
-                entity.Property(e => e.Puntaje).HasColumnName("puntaje");
+                entity.Property(e => e.Score).HasColumnName("score");
+
+                entity.HasOne(d => d.IdCoproductoNavigation)
+                    .WithMany(p => p.HistoricalIdCoproductoNavigations)
+                    .HasForeignKey(d => d.IdCoproducto)
+                    .HasConstraintName("FK__historica__idCop__3A81B327");
+
+                entity.HasOne(d => d.IdProductoNavigation)
+                    .WithMany(p => p.HistoricalIdProductoNavigations)
+                    .HasForeignKey(d => d.IdProducto)
+                    .HasConstraintName("FK__historica__idPro__398D8EEE");
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -77,12 +88,12 @@ namespace TpCursada.Dominio
                 entity.HasOne(d => d.IdCoproductoNavigation)
                     .WithMany()
                     .HasForeignKey(d => d.IdCoproducto)
-                    .HasConstraintName("FK__HISTORIAL__id_co__38996AB5");
+                    .HasConstraintName("FK__product s__id_co__3C69FB99");
 
                 entity.HasOne(d => d.IdProductoNavigation)
                     .WithMany()
                     .HasForeignKey(d => d.IdProducto)
-                    .HasConstraintName("FK__HISTORIAL__id_pr__37A5467C");
+                    .HasConstraintName("FK__product s__id_pr__3D5E1FD2");
             });
 
             OnModelCreatingPartial(modelBuilder);
