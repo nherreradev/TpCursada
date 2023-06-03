@@ -16,7 +16,12 @@
                 <h5 class="card-title">@item.Nombre</h5>
                 <img class="card-img-top" src="@item.Imagen" alt="Producto" width="100px;" height="150px;">
                 <p class="card-text">$ @item.Precio</p>
-                <a href="/ProductRecommender/Recommend/@item.Id" class="btn btn-primary">Recomendarme productos</a>
+                <form action="/ProductRecommender/Recommend" method="post">
+                        <input type="hidden" class="form-control" name="productID" id="productID" value="@item.Id">
+                    <div>
+                        <button type="submit" class="btn btn-primary">Recomendarme productos</button>
+                    </div>
+                </form>
             </div>
 
         </div>

@@ -25,7 +25,7 @@ namespace TpCursada.Controllers
             return View();
         }
 
-        [HttpGet("/ProductRecommender/Recommend/{productID}")]
+        [HttpPost]
         public IActionResult Recommend(int productID)
         {
             var resultado = _productRecommenderIAService.RecommendTop5(productID);

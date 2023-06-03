@@ -64,7 +64,7 @@ namespace TpCursada.Models
             try
             {
                 // Código de generador en base al Historial en la db
-                generarArchivoTrainigDB();
+                //generarArchivoTrainigDB();
                 // Código de entrenamiento aquí
 
                 //STEP 1: Create MLContext to be shared across the model creation workflow objects
@@ -174,34 +174,42 @@ namespace TpCursada.Models
             listaResultado._productsRecommendersList = new List<ProductsRecommendersViewModel>();
             //
             foreach (var t in top5) {
+                if (t.Score > 0.80)
+                {
+                    ProductsRecommendersViewModel prodpredi = new ProductsRecommendersViewModel();
+                    ////Cargar desde la DB
+                    Product pr = new Product();
+                    pr = _contextBD.Products.Find(t.CoPurchaseProductID);
+                    //pr.Id = t.CoPurchaseProductID;
+                    prodpredi.CoproductRecomend = pr;
+                    ////
+                    prodpredi.predictionScore = (float)Math.Round(t.Score, 2);
+                    listaResultado._productsRecommendersList.Add(prodpredi);
 
-                ProductsRecommendersViewModel prodpredi = new ProductsRecommendersViewModel();
-                ////Cargar desde la DB
-                Product pr = new Product();
-                pr=_contextBD.Products.Find(t.CoPurchaseProductID);
-                //pr.Id = t.CoPurchaseProductID;
-                prodpredi.CoproductRecomend=pr;
-                ////
-                prodpredi.predictionScore = (float)Math.Round(t.Score, 2);
-                listaResultado._productsRecommendersList.Add(prodpredi);
-               
-                //=new ProductsRecommendersViewModel(t.ProductID,t.ProductID,productID);
-                Console.WriteLine($"  Score:{t.CoPurchaseProductID}\tProduct: {t.Score}");
+                    //=new ProductsRecommendersViewModel(t.ProductID,t.ProductID,productID);
+                    Console.WriteLine($"  Score:{t.CoPurchaseProductID}\tProduct: {t.Score}");
+                }
+                else
+                    Console.WriteLine("No se encontro recomendados");
             }
                ///Returna la lista Coimpleta con el producto a comparar y sus recomendaciones cargadas con la db
             return listaResultado;
         }
         public void AddRowHistorical(ProductListViewModel _ProductListViewModel)
         {
-            Historical historical = new Historical();
-            historical.IdProductoNavigation = _contextBD.Products.FirstOrDefault(x => x.Id == _ProductListViewModel.product.Id) ;
-            historical.IdCoproductoNavigation= _contextBD.Products.FirstOrDefault(x => x.Id == GetCoProductWithMaxScore(_ProductListViewModel).CoproductRecomend.Id); 
-            historical.IdProducto=_ProductListViewModel.product.Id;
-            historical.IdCoproducto = historical.IdCoproductoNavigation.Id;
-            historical.Score = GetCoProductWithMaxScore(_ProductListViewModel).predictionScore;
-            _contextBD.Historicals.Add(historical);
-            _contextBD.SaveChanges();
-
+            if (_ProductListViewModel._productsRecommendersList.Count > 0)
+            {
+                Historical historical = new Historical();
+                historical.IdProductoNavigation = _contextBD.Products.FirstOrDefault(x => x.Id == _ProductListViewModel.product.Id) ;
+                historical.IdCoproductoNavigation= _contextBD.Products.FirstOrDefault(x => x.Id == GetCoProductWithMaxScore(_ProductListViewModel).CoproductRecomend.Id); 
+                historical.IdProducto=_ProductListViewModel.product.Id;
+                historical.IdCoproducto = historical.IdCoproductoNavigation.Id;
+                historical.Score = GetCoProductWithMaxScore(_ProductListViewModel).predictionScore;
+                _contextBD.Historicals.Add(historical);
+                _contextBD.SaveChanges();
+            }
+            else
+                Console.WriteLine("No se obtiene lista para guardar");
         }
         public ProductsRecommendersViewModel GetCoProductWithMaxScore(ProductListViewModel ProductListViewModel)
         {
