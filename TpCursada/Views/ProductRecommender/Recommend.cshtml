@@ -7,15 +7,15 @@
 
 @model ProductListViewModel
 
-<form action="/ProductRecommender/Recommend" method="post">
+<!--<form action="/ProductRecommender/Recommend" method="post">
     <div class="form-group">
-            <label for="productID">ProductID:</label>
+        <label for="productID">ProductID:</label>
         <input type="number" class="form-control" name="productID" id="productID">
-        </div>    
-        <div>
-            <button type="submit">Recomendame</button>
-        </div>
-    </form>
+    </div>    
+    <div>
+        <button type="submit">Recomendame</button>
+    </div>
+</form>-->
 
     @*<div>
         <h1>@ViewBag.Prediccion</h1>
@@ -23,6 +23,11 @@
 
 @if (ViewBag.Prediccion != null)
 {
+    <div>
+        <h1 class="text-center">Predicion  de productos para el producto</h1>
+        <h2 class="text-muted mb-4 text-center">@Model.product.Nombre</h2>
+    </div>
+
     <section style="background-color: #eee;">
         <div class="container py-3">
             <div class="row justify-content-center">
@@ -36,7 +41,7 @@
                             </div>
                             <div>                       
                             <div class="d-flex justify-content-between total font-weight-bold mt-4">
-                                <span>Total</span><span>$@Model.product.Precio</span>
+                                <span>Precio</span><span>$@Model.product.Precio</span>
                             </div>
                         </div>
                     </div>
@@ -45,10 +50,10 @@
         </div>
     </section>
 
-    <div>
-        <h1 class="text-center">Predicion  de productos para el Producto:</h1>
-        <h2 class="text-muted mb-4 text-center">@Model.product.Nombre</h2>
-    </div>
+    
+    
+    
+    
 
     <table class="table">
         <tr>
@@ -78,11 +83,11 @@
                 </td>
 
                 <td>
-                    @item.CoproductRecomend.Precio
+                    $@item.CoproductRecomend.Precio
                 </td>
 
                 <td>
-                    @item.predictionScore
+                    @item.predictionScore%
                 </td>
 
             </tr>
