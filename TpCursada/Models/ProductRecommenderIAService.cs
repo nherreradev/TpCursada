@@ -1,4 +1,5 @@
-﻿using Microsoft.ML;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Trainers;
 using System.Reflection;
@@ -187,6 +188,25 @@ namespace TpCursada.Models
             }
                ///Returna la lista Coimpleta con el producto a comparar y sus recomendaciones cargadas con la db
             return listaResultado;
+        }
+        public void AddRowHistorical(ProductListViewModel _ProductListViewModel)
+        {
+            Historical historical = new Historical();
+            historical.IdProductoNavigation = _contextBD.Products.FirstOrDefault(x => x.Id == _ProductListViewModel.product.Id);
+            historical.IdCoproductoNavigation= _contextBD.Products.FirstOrDefault(x => x.Id == GetCoProductWithMaxScore(_ProductListViewModel).CoproductRecomend.Id); 
+            historical.IdProducto=_ProductListViewModel.product.Id;
+            historical.IdCoproducto = historical.IdCoproductoNavigation.Id;
+            historical.Score = GetCoProductWithMaxScore(_ProductListViewModel).predictionScore;
+            _contextBD.Historicals.Add(historical);
+            _contextBD.SaveChanges();
+
+        }
+        public ProductsRecommendersViewModel GetCoProductWithMaxScore(ProductListViewModel ProductListViewModel)
+        {
+            ProductsRecommendersViewModel _CoproductWithScore = new ProductsRecommendersViewModel();
+            _CoproductWithScore = ProductListViewModel._productsRecommendersList.FirstOrDefault();
+
+            return _CoproductWithScore;
         }
     }
 }

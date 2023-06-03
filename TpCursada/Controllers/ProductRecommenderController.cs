@@ -29,8 +29,10 @@ namespace TpCursada.Controllers
         {
 
             var resultado = _productRecommenderIAService.RecommendTop5(productID);
-         
             ViewBag.Prediccion = resultado;
+
+            _productRecommenderIAService.AddRowHistorical(resultado);
+            
 
             return View(resultado);
         }
