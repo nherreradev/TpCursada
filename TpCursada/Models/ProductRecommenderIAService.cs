@@ -91,11 +91,11 @@ namespace TpCursada.Models
                 options.MatrixRowIndexColumnName = nameof(ProductEntry.CoPurchaseProductID);
                 options.LabelColumnName = "Label";
                 options.LossFunction = MatrixFactorizationTrainer.LossFunctionType.SquareLossOneClass;
-                //options.Alpha = 0.01;
-                //options.Lambda = 0.025;
+                options.Alpha = 0.01;
+                options.Lambda = 0.025;
                 // For better results use the following parameters
                 //options.K = 100;
-                //options.C = 0.00001;
+                //options.C = 0.001;
 
                 //Step 4: Call the MatrixFactorization trainer by passing options.
                 var est = mlContext.Recommendation().Trainers.MatrixFactorization(options);
