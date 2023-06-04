@@ -55,6 +55,7 @@ namespace TpCursada.Models
 
             // Guarda la cadena de texto en un archivo
             string filePath = DataLocationRelative;
+            File.WriteAllText(filePath, string.Empty); // Borra el contenido del archivo
             File.WriteAllText(filePath, text);
 
             /**********************Fin SQL************************/
@@ -163,7 +164,8 @@ namespace TpCursada.Models
                                CoPurchaseProductID = (uint)m
                            })
                         orderby p.Score descending
-                        select (CoPurchaseProductID: m, p.Score)).Take(5);
+                        select (CoPurchaseProductID: m, p.Score));
+                        //select(CoPurchaseProductID: m, p.Score)).Take(10);
             ProductListViewModel listaResultado = new ProductListViewModel();
             Product productIngr = new Product();
             productIngr = _contextBD.Products.Find(productID);
@@ -174,7 +176,8 @@ namespace TpCursada.Models
             listaResultado._productsRecommendersList = new List<ProductsRecommendersViewModel>();
             //
             foreach (var t in top5) {
-                if (t.Score > 0.80)
+
+                if (t.Score > 0.80 && t.Score <= 1.00 && listaResultado._productsRecommendersList.Count < 5)
                 {
                     ProductsRecommendersViewModel prodpredi = new ProductsRecommendersViewModel();
                     ////Cargar desde la DB
