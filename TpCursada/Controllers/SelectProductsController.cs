@@ -38,7 +38,7 @@ public class SelectProductsController : Controller
     }
 
     // GET: SelectProducts/Details/5
-    /*public async Task<IActionResult> Details(int? id)
+    public async Task<IActionResult> Details(int? id)
     {
         if (id == null || _context.Products == null)
         {
@@ -168,5 +168,5 @@ public class SelectProductsController : Controller
     private bool ProductExists(int id)
     {
       return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
-    }*/
+    }
 }
