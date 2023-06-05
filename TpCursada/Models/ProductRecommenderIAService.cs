@@ -148,7 +148,6 @@ namespace TpCursada.Models
 
         }
 
-
         public ProductListViewModel RecommendTop5OLD(int productID)
         {
             //Apartir de aca seria usar el modelo para crear la predicion
@@ -173,9 +172,6 @@ namespace TpCursada.Models
             ProductListViewModel listaResultado = new ProductListViewModel();
             Product productIngr = new Product();
             productIngr = _contextBD.Products.Find(productID);
-            //productIngr.Id = productID;
-            //productIngr.Nombre ="TV";
-
             ////Cargar con la DB
             listaResultado.product = productIngr;
             listaResultado._productsRecommendersList = new List<ProductsRecommendersViewModel>();
@@ -237,10 +233,8 @@ namespace TpCursada.Models
           
             //Foreach con validaciones en las busquedas
             foreach (var t in top) {
-
                 if (t.Score > 0.80 && listaResultado._productsRecommendersList.Count < 5)
                 {
-
                     Product recommendedProduct = _contextBD.Products.Find(t.CoPurchaseProductID);
                     if (recommendedProduct != null)
                     {
@@ -257,9 +251,7 @@ namespace TpCursada.Models
                     else {
                         Console.WriteLine("No se encontro el producto recomendado" + t.CoPurchaseProductID);
                     }
-
                 }
-           
             }
                ///Returna la lista Coimpleta con el producto a comparar y sus recomendaciones cargadas con la db
             return listaResultado;
