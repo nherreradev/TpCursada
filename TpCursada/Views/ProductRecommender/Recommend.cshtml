@@ -7,20 +7,6 @@
 
 @model ProductListViewModel
 
-<!--<form action="/ProductRecommender/Recommend" method="post">
-    <div class="form-group">
-        <label for="productID">ProductID:</label>
-        <input type="number" class="form-control" name="productID" id="productID">
-    </div>    
-    <div>
-        <button type="submit">Recomendame</button>
-    </div>
-</form>-->
-
-    @*<div>
-        <h1>@ViewBag.Prediccion</h1>
-    </div>*@
-
 @if (ViewBag.Prediccion != null)
 {
     <div>
@@ -53,12 +39,7 @@
             </div>
         </div>
     </section>
-
-    
-    
-    
-    
-
+  
     <table class="table">
         <tr>
             <th>ProductID </th>
@@ -71,10 +52,7 @@
         @foreach (var item in Model._productsRecommendersList)
         {
             <tr>
-                @*<td>
-        ACA DEBERIA Y LOS OBJETOS CARGADOS CON LABase de datos
-        @item.product.Id
-        </td>*@
+
                 <td class="table-light text-center">
                     @item.CoproductRecomend.Id
                 </td>

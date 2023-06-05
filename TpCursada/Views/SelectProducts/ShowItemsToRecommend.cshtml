@@ -14,7 +14,7 @@
             <div class="card-body ">
                 <p class="card-title">Producto: @item.Id</p>
                 <h5 class="card-title">@item.Nombre</h5>
-                <img class="card-img-top" src="@item.Imagen" alt="Producto" width="100px;" height="150px;">
+                <img class="card-img-top" src="@item.Imagen" alt="Producto" style="width: 200px ;height:150px;">
                 <p class="card-text">$ @item.Precio</p>
                 <form action="/ProductRecommender/Recommend" method="post">
                         <input type="hidden" class="form-control" name="productID" id="productID" value="@item.Id">
