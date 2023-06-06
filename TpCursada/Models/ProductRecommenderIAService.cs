@@ -2,7 +2,6 @@
 using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Trainers;
-using System.Reflection;
 using TpCursada.Dominio;
 
 namespace TpCursada.Models
@@ -16,6 +15,81 @@ namespace TpCursada.Models
         {
             _contextBD = context;
         }
+        /*1*/
+        public void trainingModelML()
+        {
+            try
+            {
+                // Código de generador en base al Historial en la db
+                //generarArchivoTrainigDB();
+                // Código de entrenamiento aquí
+
+                //STEP 1: Create MLContext to be shared across the model creation workflow objects
+                MLContext mlContext = new MLContext();
+
+                //STEP 2: Read the trained data using TextLoader by defining the schema for reading the product co-purchase dataset
+                //        Do remember to replace amazon0302.txt with dataset from https://snap.stanford.edu/data/amazon0302.html
+                // Especifica la ubicación real de tus datos de entrenamiento 
+                //string TrainingDataLocation = "C:\\web3\\Pruebas\\LibreriaHtmlAgilityPack\\ProductRecommendation\\Data\\Amazon0302.txt";
+                string TrainingDataLocation = DataLocationRelative;
+                var traindata = mlContext.Data.LoadFromTextFile(path: TrainingDataLocation,
+                                           columns: new[]
+                                           {
+                                            new TextLoader.Column("Label", DataKind.Single, 0),
+                                            new TextLoader.Column(name:nameof(ProductEntry.ProductID), dataKind:DataKind.UInt32, source: new [] { new TextLoader.Range(0) }, keyCount: new KeyCount(262111)),
+                                            new TextLoader.Column(name:nameof(ProductEntry.CoPurchaseProductID), dataKind:DataKind.UInt32, source: new [] { new TextLoader.Range(1) }, keyCount: new KeyCount(262111))
+                                           },
+                                           hasHeader: true,
+                                           separatorChar: '\t');
+
+                
+                /*Esta clase se utiliza para establecer y ajustar los parámetros específicos del algoritmo de factorización
+                 * de matrices durante el entrenamiento de modelos de recomendación o filtrado colaborativo.*/
+                MatrixFactorizationTrainer.Options options = new MatrixFactorizationTrainer.Options();
+                options.MatrixColumnIndexColumnName = nameof(ProductEntry.ProductID);
+                options.MatrixRowIndexColumnName = nameof(ProductEntry.CoPurchaseProductID);
+                options.LabelColumnName = "Label";
+                options.LossFunction = MatrixFactorizationTrainer.LossFunctionType.SquareLossOneClass; //Funcion de perdida durante el entrenamiento
+                options.Alpha = 0.001; /* Determina cuánto deben actualizarse los valores de las variables del modelo en cada iteración  */
+                options.Lambda = 0.001; /* Ayuda a evitar que el modelo se ajuste en exceso a los datos de entrenamiento y, en cambio, favorece la simplicidad y la estabilidad del modelo. */
+
+                /* Nutrimos el MatrixFactorization con la configuracion establecida en el paso anterior */
+                var est = mlContext.Recommendation().Trainers.MatrixFactorization(options);
+
+                /*utiliza el (Recommendation) y el conjunto de datos de entrenamiento (traindata) para entrenar el modelo
+                 * y guarda el modelo entrenado en la variable model*/
+                ITransformer model = est.Fit(traindata);
+
+                /* Guardar el modelo para aligerar la ejecucion */
+                mlContext.Model.Save(model, traindata.Schema, ModelPath);
+                Console.WriteLine("Archivo Model Generado....---");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error durante el entrenamiento del modelo: " + ex.Message);
+            }
+        }
+
+        /* 1 - Generar Archivo */
+        public void generarArchivoTrainigDB()
+        {
+
+            // Obtiene la lista de productos-coproductos del historia-productos
+            /**********************************************/
+            var historialProdCoprod = _contextBD.ProductSalesHistories.ToList();
+
+            // Construye la cadena de texto con las etiquetas
+            var text = "ProductID\tProductID_Copurchased" + Environment.NewLine;
+            text += string.Join(Environment.NewLine, historialProdCoprod.Select(r => $"{r.IdProducto}\t{r.IdCoproducto}"));
+
+            // Guarda la cadena de texto en un archivo
+            string filePath = DataLocationRelative;
+            File.WriteAllText(filePath, string.Empty); // Borra el contenido del archivo
+            File.WriteAllText(filePath, text);
+
+            /**********************Fin SQL************************/
+        }
+
 
         public static string GetAbsolutePath(string relativeDatasetPath)
         {
@@ -41,90 +115,15 @@ namespace TpCursada.Models
         private static string ModelRelativePath = $"{BaseModelRelativePath}/model.zip";
         private static string ModelPath = GetAbsolutePath(ModelRelativePath);
 
-        public void generarArchivoTrainigDB() {
-
-            // Obtiene la lista de productos-coproductos del historia-productos
-            /**********************************************/
-
-            var historialProdCoprod = _contextBD.ProductSalesHistories.ToList();
-
-            // Construye la cadena de texto con las etiquetas
-
-            var text = "ProductID\tProductID_Copurchased" + Environment.NewLine;
-            text += string.Join(Environment.NewLine, historialProdCoprod.Select(r => $"{r.IdProducto}\t{r.IdCoproducto}"));
-
-            // Guarda la cadena de texto en un archivo
-            string filePath = DataLocationRelative;
-            File.WriteAllText(filePath, text);
-
-            /**********************Fin SQL************************/
-        }
-        public void trainigModelML() {
-
-            try
-            {
-                // Código de generador en base al Historial en la db
-                //generarArchivoTrainigDB();
-                // Código de entrenamiento aquí
-
-                //STEP 1: Create MLContext to be shared across the model creation workflow objects
-                MLContext mlContext = new MLContext();
-
-                //STEP 2: Read the trained data using TextLoader by defining the schema for reading the product co-purchase dataset
-                //        Do remember to replace amazon0302.txt with dataset from https://snap.stanford.edu/data/amazon0302.html
-                // Especifica la ubicación real de tus datos de entrenamiento 
-                //string TrainingDataLocation = "C:\\web3\\Pruebas\\LibreriaHtmlAgilityPack\\ProductRecommendation\\Data\\Amazon0302.txt";
-                string TrainingDataLocation = DataLocationRelative;
-                var traindata = mlContext.Data.LoadFromTextFile(path: TrainingDataLocation,
-                                           columns: new[]
-                                           {
-                                            new TextLoader.Column("Label", DataKind.Single, 0),
-                                            new TextLoader.Column(name:nameof(ProductEntry.ProductID), dataKind:DataKind.UInt32, source: new [] { new TextLoader.Range(0) }, keyCount: new KeyCount(262111)),
-                                            new TextLoader.Column(name:nameof(ProductEntry.CoPurchaseProductID), dataKind:DataKind.UInt32, source: new [] { new TextLoader.Range(1) }, keyCount: new KeyCount(262111))
-                                           },
-                                           hasHeader: true,
-                                           separatorChar: '\t');
-
-                //STEP 3: Your data is already encoded so all you need to do is specify options for MatrxiFactorizationTrainer with a few extra hyperparameters
-                //        LossFunction, Alpa, Lambda and a few others like K and C as shown below and call the trainer.
-                MatrixFactorizationTrainer.Options options = new MatrixFactorizationTrainer.Options();
-                options.MatrixColumnIndexColumnName = nameof(ProductEntry.ProductID);
-                options.MatrixRowIndexColumnName = nameof(ProductEntry.CoPurchaseProductID);
-                options.LabelColumnName = "Label";
-                options.LossFunction = MatrixFactorizationTrainer.LossFunctionType.SquareLossOneClass;
-                options.Alpha = 0.01;
-                options.Lambda = 0.025;
-                // For better results use the following parameters
-                //options.K = 100;
-                //options.C = 0.001;
-
-                //Step 4: Call the MatrixFactorization trainer by passing options.
-                var est = mlContext.Recommendation().Trainers.MatrixFactorization(options);
-
-                //STEP 5: Train the model fitting to the DataSet
-                //Please add Amazon0302.txt dataset from https://snap.stanford.edu/data/amazon0302.html to Data folder if FileNotFoundException is thrown.
-                ITransformer model = est.Fit(traindata);
-
-                //STEP EXTRA:Guardar el modelo para aligerar la ejecucion
-                mlContext.Model.Save(model, traindata.Schema, ModelPath);
-                Console.WriteLine("Archivo Model Generado....---");
-                //En esta parte termina el Trainig
-                //Apartir de aca seria usar el modelo para crear la predicion
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error durante el entrenamiento del modelo: " + ex.Message);
-            }
-        }
+        
 
         public  PredictionEngine<ProductEntry, CopurchasePrediction> consumirModelML()
         {
             MLContext mlContext = new MLContext();
+            /* Cargar el modelo y su esquema de entrada desde el archivo model.zip */
             var model = mlContext.Model.Load(ModelPath, out var schema);
 
-            //STEP 6: Create prediction engine and predict the score for Product 63 being co-purchased with Product 3.
-            //        The higher the score the higher the probability for this particular productID being co-purchased
-
+            /* Crea un motor de predicción */
             var predictionengine = mlContext.Model.CreatePredictionEngine<ProductEntry, CopurchasePrediction>(model);
             return predictionengine;
         }
@@ -163,7 +162,7 @@ namespace TpCursada.Models
                                CoPurchaseProductID = (uint)m
                            })
                         orderby p.Score descending
-                        select (CoPurchaseProductID: m, p.Score)).Take(5);
+                        select (CoPurchaseProductID: m, p.Score));
             ProductListViewModel listaResultado = new ProductListViewModel();
             Product productIngr = new Product();
             productIngr = _contextBD.Products.Find(productID);
@@ -174,20 +173,22 @@ namespace TpCursada.Models
             listaResultado._productsRecommendersList = new List<ProductsRecommendersViewModel>();
             //
             foreach (var t in top5) {
-                if (t.Score > 0.80)
+                if (t.Score > 0.80 && listaResultado._productsRecommendersList.Count < 5)
                 {
-                    ProductsRecommendersViewModel prodpredi = new ProductsRecommendersViewModel();
-                    ////Cargar desde la DB
-                    Product pr = new Product();
-                    pr = _contextBD.Products.Find(t.CoPurchaseProductID);
-                    //pr.Id = t.CoPurchaseProductID;
-                    prodpredi.CoproductRecomend = pr;
-                    ////
-                    prodpredi.predictionScore = (float)Math.Round(t.Score, 2);
-                    listaResultado._productsRecommendersList.Add(prodpredi);
+                    {
+                        ProductsRecommendersViewModel prodpredi = new ProductsRecommendersViewModel();
+                        ////Cargar desde la DB
+                        Product pr = new Product();
+                        pr = _contextBD.Products.Find(t.CoPurchaseProductID);
+                        //pr.Id = t.CoPurchaseProductID;
+                        prodpredi.CoproductRecomend = pr;
+                        ////
+                        prodpredi.predictionScore = (float)Math.Round(t.Score, 2);
+                        listaResultado._productsRecommendersList.Add(prodpredi);
 
-                    //=new ProductsRecommendersViewModel(t.ProductID,t.ProductID,productID);
-                    Console.WriteLine($"  Score:{t.CoPurchaseProductID}\tProduct: {t.Score}");
+                        //=new ProductsRecommendersViewModel(t.ProductID,t.ProductID,productID);
+                        Console.WriteLine($"  Score:{t.CoPurchaseProductID}\tProduct: {t.Score}");
+                    }
                 }
                 else
                     Console.WriteLine("No se encontro recomendados");
