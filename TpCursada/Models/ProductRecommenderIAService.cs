@@ -248,7 +248,7 @@ namespace TpCursada.Models
                     }
                 }
             }
-               ///Returna la lista Coimpleta con el producto a comparar y sus recomendaciones cargadas con la db
+               ///Returna la lista Completa con el producto a comparar y sus recomendaciones cargadas con la db
             return listaResultado;
         }
         public void AddRowHistorical(ProductListViewModel _ProductListViewModel)
@@ -276,9 +276,7 @@ namespace TpCursada.Models
         }
         public List<Historical> GetHistorical()
         {
-
-            // Obtiene la lista de productos desde el contexto y la devuelve
-            
+            // Obtiene la lista de productos desde el contexto y la devuelve            
             return _contextBD.Historicals.Include("IdCoproductoNavigation").Include("IdProductoNavigation").ToList();
         }
     }
