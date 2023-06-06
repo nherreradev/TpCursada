@@ -32,7 +32,7 @@ using (var scope = app.Services.CreateScope())
 
     // Utilizar el servicio seg�n sea necesario
     //TODO: queda comentado para que no moleste en el front
-   productRecommenderService.trainingModelML();
+   //productRecommenderService.trainigModelML();
 }
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
