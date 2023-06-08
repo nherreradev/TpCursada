@@ -2,11 +2,20 @@
 using System.Net;
 using System.IO;
 using System.Collections.Generic;
+using TpCursada.Models;
 
 namespace TpCursada.Controllers
 {
     public class LearningController : Controller
     {
+
+
+        private ProductRecommenderIAService _productRecommenderIAService;
+
+        public LearningController(ProductRecommenderIAService productRecommenderIAService)
+        {
+            _productRecommenderIAService = productRecommenderIAService;
+        }
 
         //string logFilePath = "C:\\Users\\sullc\\source\\repos\\TpCursada\\TpCursada\\Logs\\log.txt";
         string logFilePath = "C:\\Users\\sullc\\source\\repos\\TpCursada\\TpCursada\\Logs\\LogTrainig.txt";
@@ -18,7 +27,7 @@ namespace TpCursada.Controllers
         [HttpPost]
         public IActionResult StartTraining()
         {
-
+                _productRecommenderIAService.trainingModelML();
                 // Aquí colocas el código para el entrenamiento
                 // ...
                 using (StreamWriter writer = new StreamWriter(logFilePath, true))
@@ -35,6 +44,8 @@ namespace TpCursada.Controllers
 
         public IActionResult LoadData()
         {
+
+            _productRecommenderIAService.trainingModelML();
             // Simulate data loading from a file
             // Here, we'll simply generate a list of timestamps
             List<string> records = new List<string>();

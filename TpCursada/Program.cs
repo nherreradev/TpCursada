@@ -24,16 +24,18 @@ builder.Services.AddTransient<ProductRecommenderIAService>();
 
 ///
 var app = builder.Build();
+
 // Obtener una instancia del servicio ProductRecommenderIAService a trav�s del proveedor de servicios
-using (var scope = app.Services.CreateScope())
+/**using (var scope = app.Services.CreateScope())
 {
     var serviceProvider = scope.ServiceProvider;
     var productRecommenderService = serviceProvider.GetRequiredService<ProductRecommenderIAService>();
 
     // Utilizar el servicio seg�n sea necesario
     //TODO: queda comentado para que no moleste en el front
-   //productRecommenderService.trainigModelML();
-}
+   productRecommenderService.trainigModelML();
+}*/
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

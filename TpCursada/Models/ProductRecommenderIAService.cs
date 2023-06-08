@@ -115,8 +115,11 @@ namespace TpCursada.Models
         private static string BaseModelRelativePath = @"../../../ModelML";
         private static string ModelRelativePath = $"{BaseModelRelativePath}/model.zip";
         private static string ModelPath = GetAbsolutePath(ModelRelativePath);
+        //Generador de Logs de entrenamientos
+        private static readonly string BaseLogSetRelativePath = @"../../../Logs";
+        private static string LogRelativePath = $"{BaseDataSetRelativePath}/LogTrainig.txt";
+        private static string LogLocationRelative = GetAbsolutePath(LogRelativePath);
 
-        
 
         public  PredictionEngine<ProductEntry, CopurchasePrediction> consumirModelML()
         {
@@ -279,5 +282,52 @@ namespace TpCursada.Models
             // Obtiene la lista de productos desde el contexto y la devuelve            
             return _contextBD.Historicals.Include("IdCoproductoNavigation").Include("IdProductoNavigation").ToList();
         }
+
+        public List<string> GenerarInformeDeEntrenamiento() {
+            // Simulate data loading from a file
+            // Here, we'll simply generate a list of timestamps
+            List<string> records = new List<string>();
+            for (int i = 0; i < 5; i++)
+            {
+                string timestamp = DateTime.Now.ToString();
+                // Guardar la fecha actual en el archivo de registro
+                using (StreamWriter writer = new StreamWriter(LogLocationRelative, true))
+                {
+                    writer.WriteLine(timestamp);
+                }
+
+
+            }
+
+            string lastRecord = ReadLastRecordFromLogFile();
+            records.Add(lastRecord);
+            return records;
+
+        }
+        private string ReadLastRecordFromLogFile()
+        {
+            if (System.IO.File.Exists(LogLocationRelative))
+            {
+                try
+                {
+                    // Leer todas las líneas del archivo
+                    string[] lines = System.IO.File.ReadAllLines(LogLocationRelative);
+
+                    // Obtener la última línea
+                    if (lines.Length > 0)
+                    {
+                        return lines[lines.Length - 1];
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Registrar el error en la consola
+                    Console.WriteLine($"Error reading log file: {ex.Message}");
+                }
+            }
+
+            return null;
+        }
+
     }
 }
