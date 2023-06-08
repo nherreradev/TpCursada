@@ -46,52 +46,14 @@ namespace TpCursada.Controllers
         {
 
             _productRecommenderIAService.trainingModelML();
-            // Simulate data loading from a file
-            // Here, we'll simply generate a list of timestamps
-            List<string> records = new List<string>();
-            for (int i = 0; i < 5; i++)
-            {
-                string timestamp = DateTime.Now.ToString();
-                // Guardar la fecha actual en el archivo de registro
-                using (StreamWriter writer = new StreamWriter(logFilePath, true))
-                {
-                    writer.WriteLine(timestamp);
-                }
-            
-             
-            }  
-         
-            string lastRecord = ReadLastRecordFromLogFile(); 
-            records.Add(lastRecord);
+
+           var records= _productRecommenderIAService.GenerarInformeDeEntrenamiento();
+          
             return Json(new { records });
         }
 
 
-        private string ReadLastRecordFromLogFile()
-        {
-            if (System.IO.File.Exists(logFilePath))
-            {
-                try
-                {
-                    // Leer todas las líneas del archivo
-                    string[] lines = System.IO.File.ReadAllLines(logFilePath);
-
-                    // Obtener la última línea
-                    if (lines.Length > 0)
-                    {
-                        return lines[lines.Length - 1];
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Registrar el error en la consola
-                    Console.WriteLine($"Error reading log file: {ex.Message}");
-                }
-            }
-
-            return null;
-        }
-
+       
     }
 }
 
