@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Entrenamiento del modelo";
+}
+
+<h1>Loading Example</h1>
+
+<div id="loading-message" style="display:none;">Loading...</div>
+
+<ul id="records-list">
+</ul>
+
+<button id="load-button">Load Data</button>
+
+@section scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#load-button').click(function () {
+                var button = $(this); // Guardar referencia al botón
+
+                $('#loading-message').show();
+                button.prop('disabled', true);
+
+                $.get('/Learning/LoadData', function (data) {
+                    $('#loading-message').hide();
+                    $.each(data.records, function (index, record) {
+                        $('#records-list').append('<li>' + record + '</li>');
+                    });
+
+                    button.prop('disabled', false); // Habilitar el botón nuevamente
+                });
+            });
+        });
+    </script>
+}
+
