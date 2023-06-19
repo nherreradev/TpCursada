@@ -190,56 +190,6 @@ namespace TpCursada.Models
 
         }
 
-        public ProductListViewModel RecommendTop5OLD(int productID)
-        {
-            //Apartir de aca seria usar el modelo para crear la predicion
-            //
-            //Seguinda parte o metodo que debe ejecutarse al pedir las solicitudes
-            PredictionEngine<ProductEntry, CopurchasePrediction> predictionengine = consumirModelMLYGernerarPredictor();
-
-            // find the top 5 combined products for product 
-
-            var top5 = (from m in Enumerable.Range(1, 60)
-                        let p = predictionengine.Predict(
-                           new ProductEntry()
-                           {
-                               ProductID = (uint)productID,
-                               CoPurchaseProductID = (uint)m
-                           })
-                        orderby p.Score descending
-                        select (CoPurchaseProductID: m, p.Score));
-            ProductListViewModel listaResultado = new ProductListViewModel();
-            Product productIngr = new Product();
-            productIngr = _contextBD.Products.Find(productID);
-            ////Cargar con la DB
-            listaResultado.product = productIngr;
-            listaResultado._productsRecommendersList = new List<ProductsRecommendersViewModel>();
-            //
-            foreach (var t in top5)
-            {
-
-                if (t.Score > 0.80 && listaResultado._productsRecommendersList.Count < 5)
-                {
-                    ProductsRecommendersViewModel prodpredi = new ProductsRecommendersViewModel();
-                    ////Cargar desde la DB
-                    Product pr = new Product();
-                    pr = _contextBD.Products.Find(t.CoPurchaseProductID);
-                    //pr.Id = t.CoPurchaseProductID;
-                    prodpredi.CoproductRecomend = pr;
-                    ////
-                    prodpredi.predictionScore = (float)Math.Round(t.Score, 2);
-                    listaResultado._productsRecommendersList.Add(prodpredi);
-
-                    //=new ProductsRecommendersViewModel(t.ProductID,t.ProductID,productID);
-                    Console.WriteLine($"  Score:{t.CoPurchaseProductID}\tProduct: {t.Score}");
-                }
-                else
-                    Console.WriteLine("No se encontro recomendados");
-            }
-            ///Returna la lista Coimpleta con el producto a comparar y sus recomendaciones cargadas con la db
-            return listaResultado;
-        }
-
         public ProductListViewModel RecommendTop5(int productID)
         {
             //Apartir de aca seria usar el modelo para crear la predicion
@@ -343,7 +293,7 @@ namespace TpCursada.Models
             string registro = $"{timestamp} - Registros leídos: {trainDataCount}- Estadisticas: {ObtenerEstadistica()}";
 
             // Guardar el registro en el archivo de registro mas los datos de la ultima ejecucion
-           // records.Add(ReadLastRecordFromLogFile());
+            // records.Add(ReadLastRecordFromLogFile());
             using (StreamWriter writer = new StreamWriter(LogLocationRelative, true))
             {
                 writer.WriteLine(registro);

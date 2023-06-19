@@ -17,8 +17,6 @@ namespace TpCursada.Controllers
             _productRecommenderIAService = productRecommenderIAService;
         }
 
-        //string logFilePath = "C:\\Users\\sullc\\source\\repos\\TpCursada\\TpCursada\\Logs\\log.txt";
-        string logFilePath = "C:\\Users\\sullc\\source\\repos\\TpCursada\\TpCursada\\Logs\\LogTrainig.txt";
         public IActionResult Index()
         {
             var records = _productRecommenderIAService.ReadLastRecordFromLogFile();
