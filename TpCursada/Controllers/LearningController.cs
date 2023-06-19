@@ -21,31 +21,17 @@ namespace TpCursada.Controllers
         string logFilePath = "C:\\Users\\sullc\\source\\repos\\TpCursada\\TpCursada\\Logs\\LogTrainig.txt";
         public IActionResult Index()
         {
+            var records = _productRecommenderIAService.ReadLastRecordFromLogFile();
+            ViewData["Records"] = records;
             return View();
-        }
-
-        [HttpPost]
-        public IActionResult StartTraining()
-        {
-                _productRecommenderIAService.trainingModelML();
-                // Aquí colocas el código para el entrenamiento
-                // ...
-                using (StreamWriter writer = new StreamWriter(logFilePath, true))
-                {
-                    writer.WriteLine($"{DateTime.Now.ToString()}: Operación completada.");
-                    // Agrega más registros si es necesario
-                };
-
-            string logContent = System.IO.File.ReadAllText(logFilePath);
-            ViewBag.LogContent = logContent;
-            return PartialView("_LogPartial");
 
         }
 
+        //public IActionResult StartTraining()
         public IActionResult LoadData()
         {    // Código de generador en base al Historial en la db
-            //_productRecommenderIAService.generarArchivoTrainigTestDB();
-            _productRecommenderIAService.generarArchivoTrainigDB();
+            _productRecommenderIAService.generarArchivoTrainigTestDB();
+            //_productRecommenderIAService.generarArchivoTrainigDB();
             _productRecommenderIAService.trainingModelML();
 
            var records= _productRecommenderIAService.GenerarInformeDeEntrenamiento();

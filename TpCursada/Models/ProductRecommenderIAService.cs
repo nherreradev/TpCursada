@@ -72,7 +72,7 @@ namespace TpCursada.Models
         {
             var historialProdCoprod = _contextBD.ProductSalesHistories.ToList();
 
-        
+
             // Definir una semilla para el generador de números aleatorios
             int seed = 123;
             var random = new Random(seed);
@@ -114,8 +114,8 @@ namespace TpCursada.Models
                 //STEP 2: Read the trained data using TextLoader by defining the schema for reading the product co-purchase dataset
                 //        Do remember to replace amazon0302.txt with dataset from https://snap.stanford.edu/data/amazon0302.html
                 // Especifica la ubicación real de tus datos de entrenamiento 
-                string TrainingDataLocation = DataLocationRelative;
-                //string TrainingDataLocation = TrainingDataLocationRelative;
+                //string TrainingDataLocation = DataLocationRelative;
+                string TrainingDataLocation = TrainingDataLocationRelative;
 
                 var traindata = mlContext.Data.LoadFromTextFile(path: TrainingDataLocation,
                                            columns: new[]
@@ -126,10 +126,9 @@ namespace TpCursada.Models
                                            },
                                            hasHeader: true,
                                            separatorChar: '\t');
-               //Prodria utilizar esto para que se cargo de manera enum en lugar de la configurtacion via archivo
-               //var traindata = trainData;
-               /*Esta clase se utiliza para establecer y ajustar los parámetros específicos del algoritmo de factorización
-                * de matrices durante el entrenamiento de modelos de recomendación o filtrado colaborativo.*/
+
+                /*Esta clase se utiliza para establecer y ajustar los parámetros específicos del algoritmo de factorización
+                 * de matrices durante el entrenamiento de modelos de recomendación o filtrado colaborativo.*/
                 MatrixFactorizationTrainer.Options options = new MatrixFactorizationTrainer.Options();
                 options.MatrixColumnIndexColumnName = nameof(ProductEntry.ProductID);
                 options.MatrixRowIndexColumnName = nameof(ProductEntry.CoPurchaseProductID);
@@ -144,7 +143,6 @@ namespace TpCursada.Models
                 /*utiliza el (Recommendation) y el conjunto de datos de entrenamiento (traindata) para entrenar el modelo
                  * y guarda el modelo entrenado en la variable model*/
                 ITransformer model = est.Fit(traindata);
-
                 /* Guardar el modelo para aligerar la ejecucion */
                 mlContext.Model.Save(model, traindata.Schema, ModelPath);
                 Console.WriteLine("Archivo Model Generado....---");
@@ -168,7 +166,7 @@ namespace TpCursada.Models
 
                 /* Crea un motor de predicción */
                 var predictionengine = mlContext.Model.CreatePredictionEngine<ProductEntry, CopurchasePrediction>(model);
-                predictionEngine =predictionengine;
+                predictionEngine = predictionengine;
             }
 
             return predictionEngine;
@@ -200,7 +198,7 @@ namespace TpCursada.Models
             PredictionEngine<ProductEntry, CopurchasePrediction> predictionengine = consumirModelMLYGernerarPredictor();
 
             // find the top 5 combined products for product 
-    
+
             var top5 = (from m in Enumerable.Range(1, 60)
                         let p = predictionengine.Predict(
                            new ProductEntry()
@@ -219,37 +217,37 @@ namespace TpCursada.Models
             //
             foreach (var t in top5)
             {
-           
-                        if (t.Score > 0.80 && listaResultado._productsRecommendersList.Count < 5)
-                        {
-                            ProductsRecommendersViewModel prodpredi = new ProductsRecommendersViewModel();
-                            ////Cargar desde la DB
-                            Product pr = new Product();
-                            pr = _contextBD.Products.Find(t.CoPurchaseProductID);
-                            //pr.Id = t.CoPurchaseProductID;
-                            prodpredi.CoproductRecomend = pr;
-                            ////
-                            prodpredi.predictionScore = (float)Math.Round(t.Score, 2);
-                            listaResultado._productsRecommendersList.Add(prodpredi);
 
-                            //=new ProductsRecommendersViewModel(t.ProductID,t.ProductID,productID);
-                            Console.WriteLine($"  Score:{t.CoPurchaseProductID}\tProduct: {t.Score}");
-                        }
-                        else
-                            Console.WriteLine("No se encontro recomendados");
+                if (t.Score > 0.80 && listaResultado._productsRecommendersList.Count < 5)
+                {
+                    ProductsRecommendersViewModel prodpredi = new ProductsRecommendersViewModel();
+                    ////Cargar desde la DB
+                    Product pr = new Product();
+                    pr = _contextBD.Products.Find(t.CoPurchaseProductID);
+                    //pr.Id = t.CoPurchaseProductID;
+                    prodpredi.CoproductRecomend = pr;
+                    ////
+                    prodpredi.predictionScore = (float)Math.Round(t.Score, 2);
+                    listaResultado._productsRecommendersList.Add(prodpredi);
+
+                    //=new ProductsRecommendersViewModel(t.ProductID,t.ProductID,productID);
+                    Console.WriteLine($"  Score:{t.CoPurchaseProductID}\tProduct: {t.Score}");
                 }
-                ///Returna la lista Coimpleta con el producto a comparar y sus recomendaciones cargadas con la db
-                return listaResultado;
+                else
+                    Console.WriteLine("No se encontro recomendados");
             }
+            ///Returna la lista Coimpleta con el producto a comparar y sus recomendaciones cargadas con la db
+            return listaResultado;
+        }
 
         public ProductListViewModel RecommendTop5(int productID)
         {
             //Apartir de aca seria usar el modelo para crear la predicion
             //Seguinda parte o metodo que debe ejecutarse al pedir las solicitudes
-            PredictionEngine<ProductEntry, CopurchasePrediction> predictionengine = consumirModelMLYGernerarPredictor();      
+            PredictionEngine<ProductEntry, CopurchasePrediction> predictionengine = consumirModelMLYGernerarPredictor();
 
             // find the top 5 combined products for product 6
-            Console.WriteLine("Calculating the top 5 products for product "+productID+"...");
+            Console.WriteLine("Calculating the top 5 products for product " + productID + "...");
 
             List<int> idsValidos = _contextBD.Products.Select(p => p.Id).ToList();
 
@@ -267,11 +265,11 @@ namespace TpCursada.Models
 
             ProductListViewModel listaResultado = new ProductListViewModel();
             Product productIngr = _contextBD.Products.Find(productID);
-          
+
             ////Cargar con la DB
-            listaResultado.product= productIngr;
+            listaResultado.product = productIngr;
             listaResultado._productsRecommendersList = new List<ProductsRecommendersViewModel>();
-          
+
             //Foreach con validaciones en las busquedas
             foreach (var t in top) {
                 if (t.Score > 0.80 && listaResultado._productsRecommendersList.Count < 5)
@@ -294,7 +292,7 @@ namespace TpCursada.Models
                     }
                 }
             }
-               ///Returna la lista Completa con el producto a comparar y sus recomendaciones cargadas con la db
+            ///Returna la lista Completa con el producto a comparar y sus recomendaciones cargadas con la db
             return listaResultado;
         }
 
@@ -303,9 +301,9 @@ namespace TpCursada.Models
             if (_ProductListViewModel._productsRecommendersList.Count > 0)
             {
                 Historical historical = new Historical();
-                historical.IdProductoNavigation = _contextBD.Products.FirstOrDefault(x => x.Id == _ProductListViewModel.product.Id) ;
-                historical.IdCoproductoNavigation= _contextBD.Products.FirstOrDefault(x => x.Id == GetCoProductWithMaxScore(_ProductListViewModel).CoproductRecomend.Id); 
-                historical.IdProducto=_ProductListViewModel.product.Id;
+                historical.IdProductoNavigation = _contextBD.Products.FirstOrDefault(x => x.Id == _ProductListViewModel.product.Id);
+                historical.IdCoproductoNavigation = _contextBD.Products.FirstOrDefault(x => x.Id == GetCoProductWithMaxScore(_ProductListViewModel).CoproductRecomend.Id);
+                historical.IdProducto = _ProductListViewModel.product.Id;
                 historical.IdCoproducto = historical.IdCoproductoNavigation.Id;
                 historical.Score = GetCoProductWithMaxScore(_ProductListViewModel).predictionScore;
                 _contextBD.Historicals.Add(historical);
@@ -329,29 +327,102 @@ namespace TpCursada.Models
             return _contextBD.Historicals.Include("IdCoproductoNavigation").Include("IdProductoNavigation").ToList();
         }
 
-        public List<string> GenerarInformeDeEntrenamiento() {
-            // Simulate data loading from a file
-            // Here, we'll simply generate a list of timestamps
+        public List<string> GenerarInformeDeEntrenamiento()
+        {
             List<string> records = new List<string>();
-            for (int i = 0; i < 5; i++)
+
+            // Leer el contenido del archivo de entrenamiento
+            string[] lines = File.ReadAllLines(TrainingDataLocationRelative);
+
+            // Obtener el número de registros (excluyendo la primera línea que puede contener encabezados)
+            int trainDataCount = lines.Length - 1;
+            Console.WriteLine($"Número de registros en los datos de entrenamiento: {trainDataCount}");
+
+            // Generar el registro con la hora actual de ejecución y los datos estadísticos
+            string timestamp = DateTime.Now.ToString();
+            string registro = $"{timestamp} - Registros leídos: {trainDataCount}- Estadisticas: {ObtenerEstadistica()}";
+
+            // Guardar el registro en el archivo de registro mas los datos de la ultima ejecucion
+           // records.Add(ReadLastRecordFromLogFile());
+            using (StreamWriter writer = new StreamWriter(LogLocationRelative, true))
             {
-                string timestamp = DateTime.Now.ToString();
-                // Guardar la fecha actual en el archivo de registro
-                using (StreamWriter writer = new StreamWriter(LogLocationRelative, true))
-                {
-                    writer.WriteLine(timestamp);
-                }
-
-
+                writer.WriteLine(registro);
             }
+            // Agregar el registro a la lista de registros
+            records.Add(registro);
 
-            string lastRecord = ReadLastRecordFromLogFile();
-            records.Add(lastRecord);
             return records;
-
         }
 
-        private string ReadLastRecordFromLogFile()
+        private static string ObtenerEstadistica()
+        {
+            MLContext mlContext = new MLContext();
+            // Cargar los datos de prueba y las predicciones del modelo
+            var testdata = mlContext.Data.LoadFromTextFile(path: TestDataLocationRelative,
+                                          columns: new[]
+                                          {
+                                            new TextLoader.Column("Label", DataKind.Single, 0),
+                                            new TextLoader.Column(name:nameof(ProductEntry.ProductID), dataKind:DataKind.UInt32, source: new [] { new TextLoader.Range(0) }, keyCount: new KeyCount(262111)),
+                                            new TextLoader.Column(name:nameof(ProductEntry.CoPurchaseProductID), dataKind:DataKind.UInt32, source: new [] { new TextLoader.Range(1) }, keyCount: new KeyCount(262111))
+                                          },
+                                          hasHeader: true,
+                                          separatorChar: '\t');
+
+            var trainingModel = mlContext.Model.Load(ModelPath, out var schema);
+            // Cargar los datos de entrenamiento
+            var predictions = trainingModel.Transform(testdata);
+
+            // Evaluar el modelo
+            var metrics = mlContext.Regression.Evaluate(predictions);
+            var rmse = metrics.RootMeanSquaredError;
+            var mae = metrics.MeanAbsoluteError;
+
+            Console.WriteLine($"RMSE: {rmse}");
+            Console.WriteLine($"MAE: {mae}");
+       
+
+            /////
+            var trainData = mlContext.Data.LoadFromTextFile(path: TrainingDataLocationRelative,
+                                               columns: new[]
+                                               {
+                                                   new TextLoader.Column("Label", DataKind.Single, 0),
+                                                   new TextLoader.Column(name:nameof(ProductEntry.ProductID), dataKind:DataKind.UInt32, source: new [] { new TextLoader.Range(0) }, keyCount: new KeyCount(262111)),
+                                                   new TextLoader.Column(name:nameof(ProductEntry.CoPurchaseProductID), dataKind:DataKind.UInt32, source: new [] { new TextLoader.Range(1) }, keyCount: new KeyCount(262111))
+                                               },
+                                               hasHeader: true,
+                                               separatorChar: '\t');
+
+            // Convertir los datos de entrenamiento a una lista de objetos
+            var trainDataList = mlContext.Data.CreateEnumerable<ProductEntry>(trainData, reuseRowObject: false).ToList();
+
+
+            // Obtener los valores de una característica específica (por ejemplo, ProductID)
+            var productIDs = trainDataList.Select(r => r.ProductID).ToList();
+
+            // Calcular la media
+            double mean = productIDs.Select(x => (int)x).Average();
+
+            // Calcular la desviación estándar
+            double stdDev = Math.Sqrt(productIDs.Select(x => Math.Pow(x - mean, 2)).Sum() / productIDs.Count);
+
+            // Calcular el mínimo y el máximo
+            int min = productIDs.Select(x => (int)x).Min();
+            int max = productIDs.Select(x => (int)x).Max();
+            // Imprimir las estadísticas descriptivas
+            Console.WriteLine("Estadísticas descriptivas del conjunto de datos de entrenamiento:");
+            Console.WriteLine("-------------------------------------------------------------");
+            Console.WriteLine($"Media: {mean}");
+            Console.WriteLine($"Desviación Estándar: {stdDev}");
+            Console.WriteLine($"Mínimo: {min}");
+            Console.WriteLine($"Máximo: {max}");
+            Console.WriteLine("-------------------------------------------------------------");
+
+            return $"RMSE: {rmse}" + $"MAE: {mae}"+" Estadísticas descriptivas del conjunto de datos de entrenamiento:"+ $"Media: {mean}"+ $"Desviación Estándar: {stdDev}"
+                ;
+        } 
+    
+
+        public string ReadLastRecordFromLogFile()
         {
             if (System.IO.File.Exists(LogLocationRelative))
             {

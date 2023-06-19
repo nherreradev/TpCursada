@@ -1,12 +1,25 @@
 ﻿@{
     ViewData["Title"] = "Entrenamiento del modelo";
+    var records = (string)ViewData["Records"];
 }
 
-<h1>Loading Example</h1>
+
+<h1>Registros De Entrenamiento Actuales:</h1>
+
+<ul>
+    
+        <li>@records</li>
+    
+</ul>
+
+<h1>Resultados de operacion</h1>
 
 <div id="loading-message" style="display:none;">Loading...</div>
 
 <ul id="records-list">
+
+
+
 </ul>
 
 <button id="load-button">Load Data</button>
