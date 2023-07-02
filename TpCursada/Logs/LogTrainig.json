@@ -1,0 +1,26 @@
+[
+  {
+    "Fecha": "2023-07-02 15:30:00",
+    "RegistrosLeidos": 150,
+    "Estadisticas": {
+      "RMSE": 0.75,
+      "MAE": 0.45,
+      "EstadisticasDescriptivas": {
+        "Media": 12.3,
+        "DesviacionEstandar": 1.8
+      }
+    }
+  },
+  {
+    "Fecha": "2/7/2023 20:25:25",
+    "RegistrosLeidos": 210,
+    "Estadisticas": {
+      "RMSE": 33.51,
+      "MAE": 27.04,
+      "EstadisticasDescriptivas": {
+        "Media": 33,
+        "DesviacionEstandar": 17
+      }
+    }
+  }
+]
