@@ -1,49 +1,73 @@
 ﻿@{
     ViewData["Title"] = "Entrenamiento del modelo";
-    var records = (string)ViewData["Records"];
+    RegistroEntrenamiento records = (RegistroEntrenamiento)ViewData["Records"];
 }
+@model List<RegistroEntrenamiento>
+
+<h1>Registro De Ultimo Entrenamiento Optimo:</h1>
+
+<table class="table table-bordered table-responsive table-hover">
+        <thead>
+            <tr class="table-dark">
+                <th>Operacion</th>
+                <th>Registros leídos</th>
+                <th>Estadisticas RMSE</th>
+                <th>Estadisticas MAE</th>
+                <th> Media</th>
+                <th> Desviación Estándar</th>
+             
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                <td>@records.Fecha </td>
+                <td>@records.RegistrosLeidos </td>
+                <td>@records.Estadisticas.RMSE </td>
+                <td>@records.Estadisticas.MAE </td>
+                <td>@records.Estadisticas.EstadisticasDescriptivas.Media </td>
+                <td>@records.Estadisticas.EstadisticasDescriptivas.DesviacionEstandar </td>
+                </tr>
+        </tbody>
+    </table>
 
 
-<h1>Registros De Entrenamiento Actuales:</h1>
+<h1>Registro De Entrenamiento Actuales Realizados:</h1>
 
-<ul>
-    
-        <li>@records</li>
-    
-</ul>
+<table id="loading-message" class="table table-bordered table-responsive table-hover">
+    <thead>
+        <tr class="table-dark">
+            <th>Operacion</th>
+            <th>Registros leídos</th>
+            <th>Estadisticas RMSE</th>
+            <th>Estadisticas MAE</th>
+            <th>Media</th>
+            <th>Desviación Estándar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var record in Model)
+        {
+            <tr>
+                <td>@record.Fecha</td>
+                <td>@record.RegistrosLeidos</td>
+                <td>@record.Estadisticas.RMSE</td>
+                <td>@record.Estadisticas.MAE</td>
+                <td>@record.Estadisticas.EstadisticasDescriptivas.Media</td>
+                <td>@record.Estadisticas.EstadisticasDescriptivas.DesviacionEstandar</td>
+            </tr>
+        }
+    </tbody>
+</table>
 
-<h1>Resultados de operacion</h1>
 
 <div id="loading-message" style="display:none;">Loading...</div>
+<form>
+    <a class="btn btn-dark   text-light  w3-bar-item w3-button active" asp-area="" asp-controller="Learning" asp-action="LoadData" id="load-button">Entrenar IA</a>
 
-<ul id="records-list">
-
-
-
-</ul>
-
-<button id="load-button">Load Data</button>
+</form>
 
 @section scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#load-button').click(function () {
-                var button = $(this); // Guardar referencia al botón
-
-                $('#loading-message').show();
-                button.prop('disabled', true);
-
-                $.get('/Learning/LoadData', function (data) {
-                    $('#loading-message').hide();
-                    $.each(data.records, function (index, record) {
-                        $('#records-list').append('<li>' + record + '</li>');
-                    });
-
-                    button.prop('disabled', false); // Habilitar el botón nuevamente
-                });
-            });
-        });
-    </script>
+ 
 }
 

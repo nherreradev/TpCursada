@@ -1,1 +1,3 @@
 ﻿Scaffold-DbContext "Name=EFCoreContext" Microsoft.EntityFrameworkCore.SqlServer -OutputDir CarpetaDestino
+
+Scaffold-DbContext "Server=DESKTOP-8SMFKT9\\SQLEXPRESS;Database=Competencia;Trusted_Connection=True;Encrypt=False;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir CarpetaDestino

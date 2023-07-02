@@ -1,4 +1,0 @@
-19/6/2023 18:40:24 - Registros leídos: 187- Estadisticas: RMSE: 31,11261129263658MAE: 25,043021387242216 Estadísticas descriptivas del conjunto de datos de entrenamiento:Media: 34,470588235294116Desviación Estándar: 16,36001847391419
-19/6/2023 19:00:20 - Registros leídos: 187- Estadisticas: RMSE: 31,11261129263658MAE: 25,043021387242216 Estadísticas descriptivas del conjunto de datos de entrenamiento:Media: 34,470588235294116Desviación Estándar: 16,36001847391419
-19/6/2023 19:00:59 - Registros leídos: 187- Estadisticas: RMSE: 31,11261129263658MAE: 25,043021387242216 Estadísticas descriptivas del conjunto de datos de entrenamiento:Media: 34,470588235294116Desviación Estándar: 16,36001847391419
-19/6/2023 19:07:59 - Registros leídos: 187- Estadisticas: RMSE: 31,11261129263658MAE: 25,043021387242216 Estadísticas descriptivas del conjunto de datos de entrenamiento:Media: 34,470588235294116Desviación Estándar: 16,36001847391419

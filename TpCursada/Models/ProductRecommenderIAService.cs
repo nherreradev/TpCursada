@@ -3,6 +3,10 @@ using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Trainers;
 using TpCursada.Dominio;
+using System.Text.Json;
+using System.IO;
+using static TpCursada.Models.RegistroEntrenamiento;
+using NuGet.Packaging.Signing;
 
 namespace TpCursada.Models
 {
@@ -30,8 +34,10 @@ namespace TpCursada.Models
         private static string ModelPath = GetAbsolutePath(ModelRelativePath);
         //Generador de Logs de entrenamientos
         private static readonly string BaseLogSetRelativePath = @"../../../Logs";
-        private static string LogRelativePath = $"{BaseDataSetRelativePath}/LogTrainig.txt";
+        private static string LogRelativePath = $"{BaseLogSetRelativePath}/LogTrainig.json";
         private static string LogLocationRelative = GetAbsolutePath(LogRelativePath);
+
+
 
         public static string GetAbsolutePath(string relativeDatasetPath)
         {
@@ -80,8 +86,8 @@ namespace TpCursada.Models
             // Dividir aleatoriamente los datos en conjuntos de entrenamiento y prueba
 
             var shuffledData = historialProdCoprod.OrderBy(x => random.Next()).ToList();
-            var trainData = shuffledData.Take((int)(shuffledData.Count * 0.8)).ToList();
-            var testData = shuffledData.Skip((int)(shuffledData.Count * 0.8)).ToList();
+            var trainData = shuffledData.Take((int)(shuffledData.Count * 0.9)).ToList();
+            var testData = shuffledData.Skip((int)(shuffledData.Count * 0.9)).ToList();
 
             // Construir las cadenas de texto para los archivos de entrenamiento y prueba
             var trainText = "ProductID\tProductID_Copurchased" + Environment.NewLine;
@@ -173,6 +179,7 @@ namespace TpCursada.Models
 
         }
 
+
         public float recomendarByIdProCopurId(int productID, int CoPurchaseProductID)
         {
             //Apartir de aca seria usar el modelo para crear la predicion
@@ -189,6 +196,7 @@ namespace TpCursada.Models
             return prediction.Score;
 
         }
+
 
         public ProductListViewModel RecommendTop5(int productID)
         {
@@ -276,35 +284,66 @@ namespace TpCursada.Models
             // Obtiene la lista de productos desde el contexto y la devuelve            
             return _contextBD.Historicals.Include("IdCoproductoNavigation").Include("IdProductoNavigation").ToList();
         }
-
-        public List<string> GenerarInformeDeEntrenamiento()
-        {
-            List<string> records = new List<string>();
-
-            // Leer el contenido del archivo de entrenamiento
-            string[] lines = File.ReadAllLines(TrainingDataLocationRelative);
-
-            // Obtener el número de registros (excluyendo la primera línea que puede contener encabezados)
-            int trainDataCount = lines.Length - 1;
-            Console.WriteLine($"Número de registros en los datos de entrenamiento: {trainDataCount}");
-
-            // Generar el registro con la hora actual de ejecución y los datos estadísticos
-            string timestamp = DateTime.Now.ToString();
-            string registro = $"{timestamp} - Registros leídos: {trainDataCount}- Estadisticas: {ObtenerEstadistica()}";
-
-            // Guardar el registro en el archivo de registro mas los datos de la ultima ejecucion
-            // records.Add(ReadLastRecordFromLogFile());
-            using (StreamWriter writer = new StreamWriter(LogLocationRelative, true))
+        /// <summary>
+        /// Area de informe de entrenamiento
+        /// </summary>
+        /// <returns></returns>
+        public  RegistroEntrenamiento ReadLastRecordFromLogFile() 
+     { 
+            if (System.IO.File.Exists(LogLocationRelative))
             {
-                writer.WriteLine(registro);
-            }
-            // Agregar el registro a la lista de registros
-            records.Add(registro);
+                try
+                {
+                    // Leer todas las líneas del archivo
 
-            return records;
+                    List<RegistroEntrenamiento> registrosDeArchivo = new List<RegistroEntrenamiento>();
+
+                    //Obtener del archivo
+                    var lecturaLog = File.ReadAllText(LogLocationRelative);
+
+                    registrosDeArchivo = JsonSerializer.Deserialize<List<RegistroEntrenamiento>>(lecturaLog);
+
+                    // Obtener la última línea
+                    if (lecturaLog.Length > 0)
+                    {
+                        return registrosDeArchivo.Last();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Registrar el error en la consola
+                    Console.WriteLine($"Error reading log file: {ex.Message}");
+                }
+            }
+
+            return null;
         }
 
-        private static string ObtenerEstadistica()
+        public RegistroEntrenamiento GenerarInformeDeEntrenamiento()
+        {
+            // Generar el registro con la hora actual de ejecución y los datos estadísticos
+            string timestamp = DateTime.Now.ToString();
+
+            string[] lines = File.ReadAllLines(TrainingDataLocationRelative);
+
+            // Obtener el número de registros (excluyendo la primera línea que puede contener encabezados IDproducto-CoproductoID)
+            int trainDataCount = lines.Length - 1;
+            var estadisticas = ObtenerEstadisticaEntrenamiento(); 
+
+            RegistroEntrenamiento registro = new RegistroEntrenamiento
+            {
+                Fecha = timestamp,
+                RegistrosLeidos = trainDataCount,
+
+                Estadisticas = estadisticas
+            };
+
+            // ...
+            GuardarRegistrosEnArchivo(registro);
+            return registro;
+        }
+
+        private Estadisticas ObtenerEstadisticaEntrenamiento()
         {
             MLContext mlContext = new MLContext();
             // Cargar los datos de prueba y las predicciones del modelo
@@ -329,7 +368,7 @@ namespace TpCursada.Models
 
             Console.WriteLine($"RMSE: {rmse}");
             Console.WriteLine($"MAE: {mae}");
-       
+
 
             /////
             var trainData = mlContext.Data.LoadFromTextFile(path: TrainingDataLocationRelative,
@@ -366,36 +405,41 @@ namespace TpCursada.Models
             Console.WriteLine($"Mínimo: {min}");
             Console.WriteLine($"Máximo: {max}");
             Console.WriteLine("-------------------------------------------------------------");
-
-            return $"RMSE: {rmse}" + $"MAE: {mae}"+" Estadísticas descriptivas del conjunto de datos de entrenamiento:"+ $"Media: {mean}"+ $"Desviación Estándar: {stdDev}"
-                ;
-        } 
-    
-
-        public string ReadLastRecordFromLogFile()
-        {
-            if (System.IO.File.Exists(LogLocationRelative))
+            Estadisticas result = new Estadisticas
             {
-                try
-                {
-                    // Leer todas las líneas del archivo
-                    string[] lines = System.IO.File.ReadAllLines(LogLocationRelative);
+                RMSE = Math.Round(rmse, 2),
+                MAE = Math.Round(mae, 2),
 
-                    // Obtener la última línea
-                    if (lines.Length > 0)
-                    {
-                        return lines[lines.Length - 1];
-                    }
-                }
-                catch (Exception ex)
+                EstadisticasDescriptivas = new EstadisticasDescriptivas
                 {
-                    // Registrar el error en la consola
-                    Console.WriteLine($"Error reading log file: {ex.Message}");
+                    Media = Math.Round(mean),
+                    DesviacionEstandar = Math.Round(stdDev)
                 }
-            }
+            };
 
-            return null;
+            return result;
         }
 
+        public void GuardarRegistrosEnArchivo(RegistroEntrenamiento registros)
+        {
+            List<RegistroEntrenamiento> registrosDeArchivo = new List<RegistroEntrenamiento>();
+
+            //Obtener del archivo
+            var lecturaLog = File.ReadAllText(LogLocationRelative);
+
+            registrosDeArchivo = JsonSerializer.Deserialize<List<RegistroEntrenamiento>>(lecturaLog);
+
+            /////
+            registrosDeArchivo.Add(registros);
+            string json = JsonSerializer.Serialize(registrosDeArchivo, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+
+            File.WriteAllText(LogLocationRelative, json);
+        }
+
+     
     }
+   
 }
